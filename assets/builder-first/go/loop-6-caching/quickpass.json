@@ -1,0 +1,22 @@
+{
+  "loop": 6,
+  "name": "caching + stampede",
+  "questions": [
+    {
+      "q": "A hot cache key with 60s TTL, 1000 concurrent requests at expiry. Without single-flight, what does the DB see, and what's the failure cascade?",
+      "a_outline": "DB sees ~1000 simultaneous identical queries. Connection pool may exhaust → application requests time out waiting for connections → load balancer marks the instance unhealthy → traffic shifts to other instances → those stampede similarly → cluster-wide outage. The classic cache-stampede cascade. Single-flight reduces the 1000 to 1; the other 999 wait for the same in-flight loader and share its result.",
+      "weight": 1
+    },
+    {
+      "q": "You use `cache.Del` on write. There's a race that can leave stale data in the cache anyway. Walk through it.",
+      "a_outline": "T0: reader misses cache, starts DB query (slow). T1: writer updates DB, calls cache.Del (cache is empty — no-op). T2: reader's query returns pre-T1 data. T3: reader writes pre-T1 data to cache. The cache is now stale with no pending invalidation. Mitigations: short TTL, SET NX semantics, or version-keyed reads (read includes the current version; if it changes mid-flight, the write is to a stale key that nobody reads).",
+      "weight": 1
+    },
+    {
+      "q": "When does TTL-only (no invalidation) actually beat invalidate-on-write?",
+      "a_outline": "When (a) the data is approximate by nature (popularity rankings, leaderboards, aggregate dashboards), (b) the staleness window is below user perception, (c) writes are frequent enough that invalidations would happen on every read anyway (you'd be effectively bypassing the cache). TTL is also operationally simpler — no coupling between write paths and the cache key namespace. The choice is a *consistency requirement* decision, not a default.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
