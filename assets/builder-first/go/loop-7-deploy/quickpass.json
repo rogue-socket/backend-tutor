@@ -1,0 +1,22 @@
+{
+  "loop": 7,
+  "name": "containerize + deploy",
+  "questions": [
+    {
+      "q": "Liveness vs readiness vs startup probes — what does each control, and what's the canonical bug from confusing readiness with liveness?",
+      "a_outline": "Liveness: am I broken (restart me). Readiness: can I serve (pull me from LB but don't restart). Startup: I need time to warm up (suppress liveness/readiness during warm-up). Confusing readiness with liveness: a transient DB hiccup makes the app probe fail; under liveness rules, the orchestrator restarts the container — but restart doesn't fix DB hiccups, so it loops. Under readiness rules, the LB pulls the replica; the container survives; once the dep recovers, replica returns to service. The cost of confusion: minutes of crashloops instead of seconds of degradation.",
+      "weight": 1
+    },
+    {
+      "q": "Your Dockerfile has `ENV DATABASE_URL=postgres://app:hunter2@db:5432/links`. Is this safe? What about a `RUN` line that fetches secrets from Vault and writes them to /etc/secrets/?",
+      "a_outline": "Both are unsafe. `ENV` is visible in `docker history` and in image inspection. `RUN` writing to disk persists in image layers — `docker history --no-trunc` and `dive` both reveal layer content. The only correct pattern: secrets injected at *runtime* from the platform's secret store (env vars at container start, secret-volume mounts that don't persist into the image). 12-Factor III. Detection: gitleaks/trufflehog on the build context; trivy on the image.",
+      "weight": 1
+    },
+    {
+      "q": "You SIGKILL a server during a load test and see 50 failed requests. The same scenario with SIGTERM gives 0. What does graceful shutdown actually do — name three steps?",
+      "a_outline": "Three steps `srv.Shutdown(ctx)` performs: (1) close the listener (stop accepting NEW connections); (2) wait for in-flight handlers to complete; (3) close idle connections. Plus optional pre-step: deregister from service discovery / load balancer so traffic stops arriving before the listener closes. Shutdown timeout (the ctx) bounds step 2; on timeout, remaining connections are closed forcibly (some failed requests, but vastly fewer than SIGKILL).",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}

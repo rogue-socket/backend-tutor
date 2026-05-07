@@ -1,0 +1,13 @@
+# Keep the build context small and clean.
+.git
+.github
+*.md
+.env
+.env.*
+.vscode
+.idea
+node_modules
+*.log
+tmp
+test_findings
+audits
