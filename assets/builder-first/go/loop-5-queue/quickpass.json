@@ -1,0 +1,22 @@
+{
+  "loop": 5,
+  "name": "async work via a queue",
+  "questions": [
+    {
+      "q": "Your worker acks each message before processing. After a crash, you find 1000 messages were 'delivered' according to Redis but only 200 emails were sent. Why did this happen, and what's the cost of the obvious fix?",
+      "a_outline": "Ack-before-work means crashes lose the in-flight work — the message is marked done but the side effect never happened. Fix: ack AFTER successful processing. Cost: a duplicate-delivery window if the worker hiccups between processing and ack. That's why idempotent consumers are required — at-least-once + idempotency = correctness; at-most-once + crash = lost work.",
+      "weight": 1
+    },
+    {
+      "q": "A message in Redis Streams has been redelivered 3 times and keeps failing. With your current code, it'll be redelivered every 30 seconds forever. What infrastructure pattern fixes this and what monitoring goes with it?",
+      "a_outline": "Dead-letter queue (DLQ): after N redeliveries (typical: 5), route the message to a separate stream — `notifications.dlq` — and ack the original. Monitor DLQ depth as a tier-1 alert; rising DLQ depth = the application can't handle some class of input. Without the alarm the DLQ is a graveyard. Bonus: a replay tool (read from DLQ, allow re-enqueue or discard) is part of operational kit.",
+      "weight": 1
+    },
+    {
+      "q": "Why is 'exactly-once delivery' a misleading marketing term? What's the engineering reality, and where (narrowly) is something close to exactly-once actually achievable?",
+      "a_outline": "True exactly-once across a network is impossible (two-generals problem; you can't simultaneously commit on both sides without a coordinator vulnerable to its own failures). The engineering reality is at-least-once + idempotent consumer = 'effectively once.' Where exactly-once is *almost* achievable: within a single closed system that controls both write and ack semantics — Kafka's exactly-once (idempotent producer + transactional offsets within Kafka topics) achieves it for Kafka-to-Kafka pipelines, but the moment you introduce a side effect outside Kafka (DB write, HTTP call), you're back to at-least-once.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
