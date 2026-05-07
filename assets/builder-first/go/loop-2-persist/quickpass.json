@@ -1,0 +1,22 @@
+{
+  "loop": 2,
+  "name": "persistence + concurrency break",
+  "questions": [
+    {
+      "q": "Your service logs show p99 latency spiked to 5s on `GET /links`. The DB is at 5% CPU and shows only 2 active connections. What's the most likely cause and how do you confirm?",
+      "a_outline": "Connection pool exhaustion. The pool has only ~2 connections available (or the configured max is being hit by long-running queries holding conns). The DB looks idle because the application isn't sending it work — requests are stuck waiting for a connection from the pool. Confirm: log pool acquire-wait duration; check pool.Stat() metrics (acquire count, acquire duration, idle vs in-use); look for slow queries holding connections.",
+      "weight": 1
+    },
+    {
+      "q": "An ORM call `for link in links: print(link.tags)` produces 1+N queries. Why is this almost always a bug to fix, not a perf optimisation to defer? Give one mitigation that doesn't require rewriting the call site.",
+      "a_outline": "Each round-trip has fixed cost (~0.5ms local, 5–50ms over a network); for N=100 that's 50ms–5s of pure latency before any work. Worse, this scales linearly with traffic — one call site can dominate DB load under traffic. Mitigation without rewriting the call site: eager loading at the query level (e.g., SQLAlchemy's `joinedload` or `selectinload`, GORM's `Preload`, ActiveRecord's `includes`) — turns N+1 into 1+1 or 1.",
+      "weight": 1
+    },
+    {
+      "q": "You've added a NOT NULL column to a populated 10M-row table with `ALTER TABLE links ADD COLUMN visibility TEXT NOT NULL DEFAULT 'public'`. What happens, and why?",
+      "a_outline": "On Postgres 11+, adding a column with a constant DEFAULT no longer rewrites the table — it's metadata-only and fast. BUT: the NOT NULL is enforced at write time; existing concurrent INSERTs from old code paths that don't know about the column still work because the DEFAULT fills it in. The lock is brief (ACCESS EXCLUSIVE for the metadata change). Pre-Postgres-11 this was a full table rewrite under ACCESS EXCLUSIVE — minutes-to-hours of downtime. Loop 3 walks through the safe migration sequence even on modern Postgres because adding a NOT NULL column without a default still requires expand/contract.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
