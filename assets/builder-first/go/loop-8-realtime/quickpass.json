@@ -1,0 +1,22 @@
+{
+  "loop": 8,
+  "name": "real-time + scale out",
+  "questions": [
+    {
+      "q": "Single-instance WebSocket server works in dev. You scale to 2 instances behind a round-robin LB. Two browser tabs on different instances don't see each other's broadcasts. Why, and what's the canonical fix?",
+      "a_outline": "The Hub (set of connected clients) is in-memory per-process; instance A's Hub knows nothing about instance B's clients. Broadcasts go to local clients only. Fix: a pub/sub layer (Redis pub/sub, NATS) bridging the instances. Each instance publishes its broadcasts to a shared channel and subscribes to forward incoming messages to its own local clients. Dedup needed (instance ID or recent-IDs set) to avoid re-publishing your own messages back into a loop.",
+      "weight": 1
+    },
+    {
+      "q": "A slow WebSocket client doesn't drain its receive buffer. Without backpressure handling, what happens to *other* clients on the same server, and why?",
+      "a_outline": "If the server's broadcast loop writes to the slow client synchronously, it blocks the broadcast loop — every other client waits behind it. One slow client → global broadcast latency spike. Fix: per-client bounded send buffer with non-blocking enqueue (Go: `select { case c.send <- m: default: drop-or-close }`). Slow clients drop events or get disconnected; the broadcast loop never blocks.",
+      "weight": 1
+    },
+    {
+      "q": "WebSocket reconnects after a brief network blip. With round-robin LB, the reconnect lands on a different instance. What state can you lose, and what are the two ways to fix it?",
+      "a_outline": "Loss: per-instance state — connected-client list (handled by re-broadcasting), but also any local presence / room membership / pending messages. Fix 1: sticky sessions (LB routes by client cookie or IP hash so reconnects land on same instance) — simple, but a hot user binds to one backend forever. Fix 2: shared state in Redis (presence as keys with heartbeat-driven TTL; any instance reads/writes) — scales horizontally, adds a dependency. Production systems often use both.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}

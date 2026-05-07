@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>links — realtime demo</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 720px; }
+  #status { padding: 0.5rem; background: #eee; border-radius: 4px; margin: 1rem 0; }
+  #status.connected { background: #d4edda; }
+  #status.disconnected { background: #f8d7da; }
+  ul { list-style: none; padding: 0; }
+  li { padding: 0.4rem 0.6rem; border-bottom: 1px solid #ddd; }
+  li.fresh { background: #fffbe0; transition: background 1s; }
+  form { margin: 1rem 0; }
+  input[type=text] { width: 60%; padding: 0.4rem; }
+  button { padding: 0.4rem 1rem; }
+</style>
+</head>
+<body>
+  <h1>links — realtime demo</h1>
+  <div id="status">connecting…</div>
+
+  <form id="newlink">
+    <input type="text" id="url" placeholder="https://..." required>
+    <button type="submit">add</button>
+  </form>
+
+  <h2>recent activity</h2>
+  <ul id="events"></ul>
+
+<script>
+const status = document.getElementById('status');
+const events = document.getElementById('events');
+let ws;
+
+function connect() {
+  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onopen = () => { status.textContent = 'connected'; status.className = 'connected'; };
+  ws.onclose = () => {
+    status.textContent = 'disconnected — reconnecting in 2s';
+    status.className = 'disconnected';
+    setTimeout(connect, 2000);
+  };
+  ws.onerror = (e) => console.error('ws error', e);
+  ws.onmessage = (msg) => {
+    const ev = JSON.parse(msg.data);
+    const li = document.createElement('li');
+    li.textContent = `${ev.type}: ${JSON.stringify(ev.data)}`;
+    li.className = 'fresh';
+    events.prepend(li);
+    setTimeout(() => li.classList.remove('fresh'), 1500);
+  };
+}
+connect();
+
+document.getElementById('newlink').onsubmit = async (e) => {
+  e.preventDefault();
+  const url = document.getElementById('url').value;
+  await fetch('/links', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, title: url }),
+    credentials: 'include',
+  });
+  document.getElementById('url').value = '';
+};
+</script>
+</body>
+</html>
