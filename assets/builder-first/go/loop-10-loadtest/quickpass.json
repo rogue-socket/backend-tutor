@@ -1,0 +1,22 @@
+{
+  "loop": 10,
+  "name": "load test + postmortem",
+  "questions": [
+    {
+      "q": "Open-loop vs closed-loop load testing. When does closed-loop lie, and which should most production load tests use?",
+      "a_outline": "Closed-loop (constant VU count) lies under back-pressure: when the service slows, VUs queue and fewer requests are issued, so total RPS appears to drop and tail latency is hidden behind that drop. Open-loop (constant arrival rate) issues at the target rate regardless of service latency, exposing tail latency as production would. Most production tests should be open-loop because production traffic is open-loop (users arrive on their schedule, not held back when the service is slow). Closed-loop is useful for 'what does one user feel?'; open-loop for 'how does the service behave at this RPS?'.",
+      "weight": 1
+    },
+    {
+      "q": "Apply Little's Law to sizing a DB pool: 800 RPS read traffic, 25ms average query duration. What's the minimum pool size?",
+      "a_outline": "L = λW = 800 × 0.025 = 20. So average 20 in-flight queries; pool needs at least 20 to avoid queueing. In practice add headroom for variance — pool size 30–40 is reasonable. Beyond that, pool size grows with peak concurrency and connection-establishment cost. HikariCP advice: don't over-pool; counter-intuitively, fewer connections often gives better throughput because of reduced contention on the DB side.",
+      "weight": 1
+    },
+    {
+      "q": "A postmortem lists 'engineer mistyped a parameter' as root cause. Why is that framing wrong, and what's a better contributing-factor analysis?",
+      "a_outline": "Single-cause / single-owner / 'human error' framings are almost always true and almost always useless — humans make typos. The interesting question is what about the system made the typo costly: no confirmation prompt? No type checking? No code review? No automated regression test? Better framing: 'A typo in a CLI parameter went unverified because the prod tool accepts arbitrary inputs without a confirmation step.' Action item then targets the system (add confirmation, add a validator, add a typo-detection lint) — which is fixable, unlike 'be more careful'.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
