@@ -1,0 +1,22 @@
+{
+  "loop": 9,
+  "name": "observability + planted bug",
+  "questions": [
+    {
+      "q": "Why is `user_id` a bad Prometheus label, and where should per-user data go instead?",
+      "a_outline": "Each unique label value combination is a separate time series. With 10K users × few other labels = millions of series; Prometheus memory grows linearly, scrape times balloon, query performance dies. Series count is bounded by metric cardinality, and Prometheus is built for low-cardinality summary data. Per-user data belongs in logs and traces, both of which are designed for high-cardinality detail. Rule of thumb: label cardinality should be < ~1000 per label; total series per metric should be in the low thousands at most.",
+      "weight": 1
+    },
+    {
+      "q": "RED method (rate, errors, duration) vs USE (utilization, saturation, errors). When do you use each?",
+      "a_outline": "RED for request-driven services — applied to a handler, queue consumer, or anything that takes work-units in and produces results. Tells you 'is the service serving requests well?'. USE for resources — CPU, memory, disk, connection pools, thread pools. Tells you 'is this resource healthy?'. They're complementary: RED on the handlers + USE on the underlying resources catches both 'service is slow' (RED) and 'we're about to fall off a cliff' (USE saturation as an early warning).",
+      "weight": 1
+    },
+    {
+      "q": "Distributed tracing: head sampling vs tail sampling — trade-off, and what most production setups actually do.",
+      "a_outline": "Head sampling: decide at trace start whether to capture (e.g., 1% random). Cheap; predictable cost. Biased — drops the bad traces you most want. Tail sampling: collect every span, decide at trace end (based on duration, errors, etc.) whether to keep. Captures interesting traces but expensive (full collection). Most production: head sampling for high-volume baseline + 100% sampling for errored/slow traces (controlled by trace attributes set during the request). Best of both worlds: cheap normal-case + complete coverage where it matters.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
