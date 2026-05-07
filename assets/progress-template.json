@@ -1,0 +1,27 @@
+{
+  "started": "",
+  "learner": {
+    "level": "",
+    "working_mode": "",
+    "orientation": "",
+    "language": "",
+    "stated_goals": [],
+    "stated_context": []
+  },
+  "topics": {},
+  "sr_queue": {
+    "items": []
+  },
+  "exercises": {
+    "entries": []
+  },
+  "loops": {
+    "current": null,
+    "entries": []
+  },
+  "sessions": {
+    "entries": []
+  },
+  "_schema_version": 1,
+  "_notes": "Schema reference: see references/spaced-repetition.md in the skill source. learner.level: foundations | working | senior. learner.working_mode: standard | adjacent_domain (only meaningful when level=working). learner.orientation: foundations_first | builder_first. learner.language: go | python | node | java | kotlin | rust | other:<name>. Topic status values: unknown | weak | in_progress | solid | mastered. Confidence: 1-5."
+}
