@@ -1,0 +1,23 @@
+{
+  "loop": 1,
+  "name": "bare CRUD",
+  "questions": [
+    {
+      "q": "An HTTP handler in Go reads from a shared map without a mutex while another goroutine writes to it. What does `go test -race` show, and why does it show it?",
+      "a_outline": "Race detector reports 'WARNING: DATA RACE' with the two stack traces (the read site and the write site). It instruments memory access and looks for unsynchronised accesses to the same address from different goroutines. The Go memory model defines visibility through happens-before edges (locks, channel ops, sync primitives); absence of such an edge between two accesses = race. Without -race, the runtime may also panic with 'fatal error: concurrent map writes', or silently corrupt — non-deterministic.",
+      "weight": 1
+    },
+    {
+      "q": "GET /links/abc (where 'abc' is not a valid integer ID) — what status code, and why?",
+      "a_outline": "404 Not Found. The URL identifies a resource; an unparseable identifier means 'no such resource'. 400 is for malformed requests where the URL is fine but the body or query is bad — different layer. (Some teams use 400 for unparseable path params; 404 is the more common REST convention and what the WIN criteria specify.)",
+      "weight": 1
+    },
+    {
+      "q": "POST /links with body `{\"url\":\"x\"}` and Content-Type: text/plain — what status code, and why? What about the same body with no Content-Type header at all?",
+      "a_outline": "Both → 415 Unsupported Media Type. The handler accepts application/json; anything else (including missing) should be rejected with 415, not 400. (400 is for 'I tried to parse it and it didn't make sense'; 415 is 'I refuse to try because the format is wrong'.) This is the most forgotten status code and the most common cause of 'why is my API accepting weird stuff'.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2,
+  "notes": "Pass = 2 of 3. If learner misses Q1, that's a T3 gap (concurrency); seed an SR item. If they miss Q2 or Q3, that's a T0/T1 gap (HTTP semantics); seed accordingly."
+}

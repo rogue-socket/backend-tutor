@@ -1,0 +1,23 @@
+{
+  "loop": 1,
+  "name": "bare CRUD (spec-only)",
+  "questions": [
+    {
+      "q": "Two threads/goroutines/tasks call Create() at the same time on an unsynchronised in-memory store. What can go wrong, and *why* — at the level of the language runtime / memory model?",
+      "a_outline": "Either: (a) the runtime panics or throws (e.g., Go's 'fatal error: concurrent map writes', Java's ConcurrentModificationException), (b) corruption — bytes from one writer half-overwrite the other, or (c) a lost update — both readers compute the next ID as N, both write to slot N, one is silently lost. Why: shared mutable state accessed without a synchronisation event has no happens-before relationship — the language's memory model doesn't define what the second thread sees. The synchronisation primitive (lock, mutex, atomic) establishes the happens-before edge.",
+      "weight": 1
+    },
+    {
+      "q": "GET /links/abc (where 'abc' is not a valid integer ID) — what status code, and why?",
+      "a_outline": "404 Not Found. The URL identifies a resource; an unparseable identifier means 'no such resource'. 400 is for malformed requests where the URL is fine but the body or query is bad — different layer. (Some teams use 400 for unparseable path params; 404 is the more common REST convention.)",
+      "weight": 1
+    },
+    {
+      "q": "POST /links with body `{\"url\":\"x\"}` and Content-Type: text/plain — what status code, and why? What about the same body with no Content-Type header at all?",
+      "a_outline": "Both → 415 Unsupported Media Type. The handler accepts application/json; anything else (including missing) should be rejected with 415, not 400. (400 is 'I tried to parse it and it didn't make sense'; 415 is 'I refuse to try because the format is wrong'.) This is the most-forgotten status code and the most common cause of 'why is my API accepting weird stuff'.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2,
+  "notes": "Pass = 2 of 3. If learner misses Q1, that's a T3 gap (concurrency); seed an SR item. If they miss Q2 or Q3, that's a T0/T1 gap (HTTP semantics); seed accordingly."
+}
