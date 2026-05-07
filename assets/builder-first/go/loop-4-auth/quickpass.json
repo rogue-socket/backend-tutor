@@ -1,0 +1,22 @@
+{
+  "loop": 4,
+  "name": "auth",
+  "questions": [
+    {
+      "q": "Your service stores passwords as `sha256(password + salt)`. An attacker steals the user table. Why is this still a disaster, and what should you have used?",
+      "a_outline": "SHA-256 is GPU-friendly — commodity hardware computes ~10 billion hashes/sec. Even with per-user salt, an attacker can crack any password under, say, 12 chars (and most users') in hours. The fix is a memory-hard or compute-hard hash: argon2id (preferred), bcrypt, or scrypt. Salt is necessary but insufficient; the *slowness* of the hash is the security property.",
+      "weight": 1
+    },
+    {
+      "q": "A logged-in user's browser visits attacker.example. The page POSTs `application/x-www-form-urlencoded` to your `/links` endpoint. Your service has `SameSite=Lax` cookies and accepts `application/json` only. Walk through what happens at each layer.",
+      "a_outline": "Browser: sees cross-site POST with form-encoded body. SameSite=Lax tells browser to NOT include the cookie. Request reaches your server with no session cookie. Your auth middleware returns 401 (no session). Even if the cookie *were* sent, your Content-Type check rejects non-JSON — 415. Two independent defenses; the cookie one is sufficient on its own. The CSRF attack fails before reaching application logic.",
+      "weight": 1
+    },
+    {
+      "q": "Your sessions table has 50M rows after 6 months — most expired. Reading a session takes 80ms. What's the issue and what do you do?",
+      "a_outline": "Either: (a) you have no index on (id) — add one; or (b) more likely, the table is bloated with expired sessions and the planner's stats are skewed. Solutions: index on `id` (it's the PK so this should be there), index on `expires_at`, periodic cleanup of expired rows (cron / pg_cron / app-level job), VACUUM/autovacuum tuning. Best practice: a daily DELETE of expired sessions plus pg_cron, keeps the table small and fast. Stretch: partition the table by month.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
