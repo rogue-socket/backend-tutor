@@ -1,0 +1,28 @@
+-- ⚠️ DO NOT APPLY THIS MIGRATION TO A LIVE DATABASE.
+--
+-- Loop 3 — the "obvious" way that's wrong on a populated table.
+--
+-- This file is named 9001_ to sort *after* all real migrations so a sane runner
+-- won't pick it up before you mean to. It exists for the BREAK exercise.
+--
+-- What's wrong:
+--   - One statement combines ADD COLUMN, NOT NULL, and DEFAULT.
+--   - Pre-Postgres-11: full table rewrite under ACCESS EXCLUSIVE (minutes-to-hours
+--     for a large table; everything blocks).
+--   - Postgres 11+: ADD COLUMN with constant DEFAULT is fast (metadata-only),
+--     but the NOT NULL still requires that all existing rows satisfy it. Postgres
+--     handles this by stamping the default at read time for old rows — fine.
+--     HOWEVER, this approach gives you no rollback path: once applied, you can't
+--     deploy old code that doesn't know about the column without losing the
+--     defaulting behaviour for new inserts.
+--   - The bigger reason it's wrong: combined migrations like this assume "deploy
+--     code + apply migration" is a single atomic event. In reality, code rolls
+--     out over minutes-to-hours, and old code paths may still be inserting.
+--
+-- Run this against a separate test DB to feel the lock yourself:
+--   docker exec -it $(docker compose ps -q db) psql -U app links_scratch
+--   \timing on
+--   ALTER TABLE links ADD COLUMN visibility TEXT NOT NULL DEFAULT 'public';
+-- Then in another terminal hammer the table with INSERTs and watch them block.
+
+ALTER TABLE links ADD COLUMN visibility TEXT NOT NULL DEFAULT 'public';

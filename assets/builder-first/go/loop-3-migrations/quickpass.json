@@ -1,0 +1,22 @@
+{
+  "loop": 3,
+  "name": "migrations + schema evolution",
+  "questions": [
+    {
+      "q": "You apply `ALTER TABLE links ADD COLUMN visibility TEXT NOT NULL DEFAULT 'public'` to a 50M-row table. The migration finishes in 200ms. But during that 200ms, hundreds of reads and writes failed. Why?",
+      "a_outline": "Lock queueing. The DDL acquired ACCESS EXCLUSIVE on `links`; while held, every other query on the table queued behind it. If anything else held even a long-running ACCESS SHARE (e.g., an idle transaction with a SELECT), the migration *itself* queued behind that, and meanwhile every new query queued behind the migration. The 200ms was just the work; the outage window is queue depth × time held.",
+      "weight": 1
+    },
+    {
+      "q": "Walk through the four-step expand/contract sequence to add a NOT NULL column to a populated table without downtime. Why is each step separate?",
+      "a_outline": "(1) ADD COLUMN nullable — code can start writing it; old code paths still work because NULL is allowed. (2) Backfill in batches — set every existing row to a value. (3) ALTER ... SET NOT NULL + SET DEFAULT — now NULLs are forbidden, but DEFAULT keeps old code paths working. (4) Add index CONCURRENTLY if needed. Separation matters because each step commits and is visible to the application immediately; combining steps holds locks longer or risks half-done state. Code rolls out independently between steps.",
+      "weight": 1
+    },
+    {
+      "q": "Why must `CREATE INDEX CONCURRENTLY` run *outside* a transaction, and what happens if it fails?",
+      "a_outline": "Postgres builds the index in two passes with a brief barrier between, neither of which can be wrapped in an outer transaction (the design avoids long-held catalog locks). If wrapped in BEGIN/COMMIT, Postgres rejects with 'CREATE INDEX CONCURRENTLY cannot run inside a transaction block'. On failure (e.g., uniqueness violation discovered mid-build), the index is left in an INVALID state — `indisvalid = false`. Queries don't use it; recovery is `DROP INDEX CONCURRENTLY <name>` then retry.",
+      "weight": 1
+    }
+  ],
+  "pass_threshold": 2
+}
