@@ -1,88 +1,41 @@
-# Install
+# Install — macOS / Linux + Codex CLI
 
-This is the **`main`** branch — covers every supported (OS × harness) combo. If you want a leaner, single-path README, switch to one of the platform branches:
-
-| Branch | OS | Harness |
-|---|---|---|
-| [`main`](https://github.com/rogue-socket/backend-tutor/tree/main) | macOS / Linux / Windows | any |
-| [`cc-windows`](https://github.com/rogue-socket/backend-tutor/tree/cc-windows) | Windows | Claude Code |
-| [`codex-macos`](https://github.com/rogue-socket/backend-tutor/tree/codex-macos) | macOS / Linux | Codex CLI |
-| [`codex-windows`](https://github.com/rogue-socket/backend-tutor/tree/codex-windows) | Windows | Codex CLI |
-
-Platform branches strip the conditionals and ship just the path that applies to that combo. They're rebased onto `main` periodically (`tools/sync-platform-branches.sh`).
+This is the **`codex-macos`** branch. It ships only the macOS / Linux + OpenAI Codex CLI install path. For the full matrix (Windows / Claude Code / other harnesses), switch to [`main`](https://github.com/rogue-socket/backend-tutor/tree/main).
 
 ---
 
-## macOS / Linux
-
-### Claude Code
+## Clone
 
 ```bash
 git clone https://github.com/rogue-socket/backend-tutor ~/Documents/backend-tutor
-ln -s ~/Documents/backend-tutor ~/.claude/skills/backend-tutor
 ```
 
-Then in any Claude Code session: `> start the backend tutor`.
+Codex reads `AGENTS.md` from the project's working directory — there's no symlink step. The repo *is* the install.
 
-### Codex CLI
+## Use it
 
 ```bash
-git clone https://github.com/rogue-socket/backend-tutor ~/Documents/backend-tutor
 cd ~/Documents/backend-tutor
 codex "start the backend tutor"
 ```
 
-Codex reads `AGENTS.md` from cwd; no symlink needed.
+The agent picks up `AGENTS.md`, which routes it to `SKILL.md`. From there it runs the vibe check → lane → orientation + language → workspace setup → first lesson.
 
-### Copilot CLI / Cursor / Aider / others
+The workspace lives at `~/backend-dev/`. Resume any time with `/continue` (works across harnesses — the workspace is the bridge).
 
-Same shape as Codex. `cd` into the cloned repo (or copy `AGENTS.md` into your project) before invoking the agent.
+## Update
 
----
-
-## Windows
-
-### Claude Code (PowerShell, no admin / Developer Mode required)
-
-Use a directory junction — junctions work for any user without elevated permissions, unlike symlinks:
-
-```powershell
-git clone https://github.com/rogue-socket/backend-tutor "$env:USERPROFILE\Documents\backend-tutor"
-
-$src = "$env:USERPROFILE\Documents\backend-tutor"
-$dst = "$env:USERPROFILE\.claude\skills\backend-tutor"
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills" | Out-Null
-cmd /c mklink /J "$dst" "$src"
+```bash
+cd ~/Documents/backend-tutor
+git pull origin codex-macos
 ```
 
-Verify:
+## Note for projects
 
-```powershell
-Get-Item $dst | Select-Object Name, Target
+If you'd rather invoke the tutor from inside another project's directory (so it has cwd context for codebase-specific questions), copy `AGENTS.md` into that project:
+
+```bash
+cp ~/Documents/backend-tutor/AGENTS.md /path/to/your/project/
 ```
 
-Then in any Claude Code session: `> start the backend tutor`.
-
-### Codex CLI (PowerShell)
-
-```powershell
-git clone https://github.com/rogue-socket/backend-tutor "$env:USERPROFILE\Documents\backend-tutor"
-cd "$env:USERPROFILE\Documents\backend-tutor"
-codex "start the backend tutor"
-```
-
-Codex reads `AGENTS.md` from cwd; no junction needed.
-
-### Other harnesses on Windows
-
-Same shape — `cd` into the cloned repo before invoking the agent.
-
----
-
-## Resume — any platform, any harness
-
-```
-> /continue
-```
-
-Reads `~/backend-dev/session-state.md` (or `%USERPROFILE%\backend-dev\session-state.md` on Windows) and picks up where you left off, even if the previous session ran in a different harness.
+`AGENTS.md` is a thin pointer at `SKILL.md`; copying it into a project lets Codex find the tutor while sitting in your own codebase.
