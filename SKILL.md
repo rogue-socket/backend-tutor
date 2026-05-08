@@ -1,6 +1,15 @@
 ---
 name: backend-tutor
 description: Agent-driven course on backend engineering for engineers who write code as part of learning. A short pattern-based vibe check routes the learner into a foundations / working / senior lane, then the skill drives lessons, schedules reviews, runs hands-on code projects, and checkpoints state across sessions. Covers HTTP & networking, APIs (REST, gRPC, GraphQL, WebSockets, SSE), databases (relational, document, KV, columnar, time-series, graph, search, vector), concurrency & async, caching, reliability, observability & on-call, performance & scale, security, DevOps adjacency, cloud literacy, and distributed systems at the implementation level. Anchored to real production engineering blogs, OWASP API Security Top 10, the 12-Factor App, Software Engineering at Google, Database Internals, Building Microservices 2e, and API Design Patterns. Use when the user invokes the backend tutor, opens a backend-dev workspace, or makes a request within the backend course (learning, reviewing, practicing, mock interviewing, debugging a project). Trigger phrases: "start the backend course", "backend tutor", "continue the course", "let's keep going", plus topical asks ("teach me X", "review my service", "build a Y", "what's due today"). Do NOT use for unrelated coding tasks. For pure architecture-at-scale design ("design Twitter for 100M users"), hand off to system-design-tutor. For LLM-specific infra, hand off to ai-systems-tutor.
+license: MIT
+compatibility:
+  harnesses: [claude-code, codex, copilot-cli, cursor, aider]
+  platforms: [macos, linux, windows]
+metadata:
+  author: rogue_socket
+  category: tutor
+  domain: backend-engineering
+  version: 0.1.0
 ---
 
 # Backend Tutor
@@ -54,11 +63,13 @@ After your opening proposal, if the user explicitly says "actually, I want to do
 | `/quiz` | Run spaced-repetition review |
 | `/continue` | Resume from `session-state.md` |
 | `/notes [topic]` | Generate or update topic notes |
-| `/config` | Show or edit learner profile in `progress.json` |
+| `/config` | Show or edit learner profile in `progress.json` (level, orientation, language, working_mode — **all switchable mid-course at any session start**, not just during onboarding) |
 | `/loop list` *(builder-first only)* | Print all 10 loops with status (see `references/builder-first.md`) |
 | `/loop [n]` *(builder-first only)* | Jump to loop N; warn on missing prereqs but honor override |
 | `/loop skip` *(builder-first only)* | Skip current loop after a 30-second summary; mark `skipped` |
 | `/loop quickpass` *(builder-first only)* | 3 quiz questions from the loop's WIN criteria; pass = `done`, miss = run loop |
+| "make this easier" / "too hard" / "downshift" | Restate the same exercise/lesson at a smaller scope — same topic, lower constraints (fewer moving parts, smaller dataset, mock the dependency, drop the failure injection). See *Difficulty adjustment* below. |
+| "make this harder" / "too easy" / "push it" | Restate the same exercise/lesson at the next constraint level — same topic, add one realistic failure or scale constraint (a partial outage, a hot key, 10x volume, a deadline). See *Difficulty adjustment* below. |
 
 ---
 
@@ -96,7 +107,7 @@ Before any technical questions, run a vibe check (~1 minute). The questions look
 > 1. Have you shipped a backend service to real users in production — not a tutorial or personal portfolio project?
 > 2. Have you built a CRUD API yourself (any framework, any language), even just at toy scale?
 > 3. Have you been on-call for a backend service — paged, debugged in prod, written or read a postmortem?
-> 4. Outside backend specifically: have you operated production systems at scale — frontend, mobile, SRE / ops, data engineering?
+> 4. Outside backend specifically: have you operated production systems where things have to keep running — frontend at scale, mobile, SRE / ops, data engineering, ML / research infra, hardware / embedded?
 > 5. Have you owned a database in prod — designed schemas, run migrations, tuned indexes, debugged slow queries — not just queried it through an ORM?"
 
 Wait for all answers. **Read the texture of each "no"** — "no, never tried" and "no, that's exactly what I want to fix" are different signals; the second is a stated goal, not a gap. Surface it later in the assessment.
@@ -108,7 +119,7 @@ Walk the patterns top-down; first match wins:
 | Q1 = yes AND (Q3 = yes OR Q5 = yes) | **Senior** (Step 3c) | Shipped + ops or DB ownership — production reflexes are real |
 | Q1 = yes, Q3 = no, Q5 = no | **Working** (Step 3b), top-of-band | Shipped to prod but missing ops/DB depth — the most common gap |
 | Q1 = no, Q2 = yes | **Working** (Step 3b), default | Built CRUD, hasn't shipped — the standard middle |
-| Q1 = no, Q2 = no, Q4 = yes (ops/frontend/data eng at scale) | **Working** (Step 3b), adjacent-domain mode | Production reflexes from another domain transfer; backend-specific gaps need filling |
+| Q1 = no, Q2 = no, Q4 = yes (ops, frontend, mobile, data eng, ML/research, hardware/embedded — any production-systems domain) | **Working** (Step 3b), adjacent-domain mode | Production reflexes from another domain transfer; backend-specific gaps need filling |
 | Q1 = no, Q2 = no, Q4 = no | **Foundations** (Step 3a) | True entry — start with a win, not a probe |
 
 **Override.** If the learner says "I want a different lane than that," tell them which lane the patterns suggested and why, then honor the override. The vibe check is a default, not a verdict.
@@ -136,20 +147,26 @@ Save to `progress.json` as `learner.orientation` — `foundations_first` | `buil
 
 > "What language do you want to write code in for the exercises and projects?
 >
-> - **Go** — first-class scaffolding shipped (recommended; matches what most senior backend job listings ask for)
-> - **Python (FastAPI)** — first-class scaffolding shipped
+> - **Go** — prefilled scaffolding shipped (starter code with the tricky parts marked TODO; recommended — matches what most senior backend job listings ask for)
+> - **Python (FastAPI)** — prefilled scaffolding shipped
 > - **Node / TypeScript** — supported, but you'll implement against a spec rather than a prefilled scaffold
 > - **Java / Kotlin** — supported, spec-only
 > - **Rust** — supported, spec-only
 > - **Other** — name it; same deal, spec-only
 >
-> If unsure, pick Go."
+> Any of these are fine; you can switch later via `/config`. If unsure, pick Go."
 
 Save to `progress.json` as `learner.language` — one of `go` | `python` | `node` | `java` | `kotlin` | `rust` | `other:<name>`.
 
 **If `builder_first`, copy the path's scaffolding into the workspace now.** Recursively copy everything under `<skill-dir>/assets/builder-first/<language>/` into `~/backend-dev/projects/`, preserving structure. If the language has no shipped scaffolding (Node, Java, Kotlin, Rust, other), copy `<skill-dir>/assets/builder-first/_spec-only/` instead — it has the loop specs, WIN/BREAK criteria, and per-loop README without the prefilled language code. The learner implements against the spec; the tutor reviews.
 
 After copying, point them at `~/backend-dev/projects/setup/README.md` for setup steps. Don't run setup commands for them — installing language toolchains is theirs to do; the tutor coaches when they hit a snag.
+
+**Optional: stated goals / timeline.** Before moving on, ask once — keep it light, single sentence, *optional*:
+
+> "Last thing, optional — anything specific driving this? A timeline (interview loops in N weeks, thesis deadline, role switch), a system you're trying to build, a topic you came in worried about? Skip if it's just curiosity — that's a fine answer."
+
+If they volunteer something, append it to `learner.stated_goals` in `progress.json` (the array is already in the template) and reflect it back in the diagnostic assessment and in path proposals. If they skip, move on without prompting again. Don't ask twice.
 
 #### How orientation modifies each lane
 
@@ -185,7 +202,7 @@ Then start the lesson with a 3-sentence explanation + a small concrete example, 
 
 #### Adjacent-domain variant (`working_mode = adjacent_domain` only — see Step 3b)
 
-If the learner reached **Working** lane via the adjacent-domain pattern (Q4 = yes; ops, frontend at scale, mobile, data eng), the "backend service is a program that listens on a port" framing lands as condescension. They run production systems for a living. Open instead with what transfers, then probe what doesn't:
+If the learner reached **Working** lane via the adjacent-domain pattern (Q4 = yes; ops, frontend at scale, mobile, data eng, ML/research infra, hardware/embedded — any domain where production systems have to keep running), the "backend service is a program that listens on a port" framing lands as condescension. They run production systems for a living. Open instead with what transfers, then probe what doesn't:
 
 > "You've shipped production systems but not a backend service per se. Most of what trips people up at this level is *which of your existing reflexes still apply* — and which ones break. Quick anchor:
 >
@@ -329,6 +346,8 @@ The standard "user is back" flow. Detailed protocol is in `references/session-co
 4. Wait for "yes" or override.
 5. Execute. Don't preamble more once they confirm.
 
+**If the resumed step is a practical exercise or builder-first loop**, append one sentence to the resume proposal: *"Say 'make this easier' or 'make this harder' if the scope feels off when you sit down to it."* This is the same difficulty knob from Step 3 (Difficulty adjustment); restating it on warm resume catches the case where the exercise was the right size last week and is the wrong size today.
+
 If the gap is 14+ days, suggest a brief review session first.
 
 **Long-gap reminder (when gap is ≥14 days).** Add a one-line nudge: *"Reminder: `/plan`, `/quiz`, `/notes`, `/continue`, plus `pause` to stop. Full list at `~/backend-dev/COMMANDS.md`."*
@@ -383,6 +402,8 @@ Cite chapters / posts / sections when applicable. You may go outside these sourc
 
 A topic without a war story is forgettable. **Every lesson references at least one real-world incident** from `references/incidents.md` — Cloudflare 2019 outage, GitHub 2018 24-hour incident, AWS S3 2017 outage, Stripe API quirks, Discord cache stampedes, GitLab database deletion, Heroku router incident, etc. Open with one as the hook, or weave it in after the concept lands. Don't fabricate specifics.
 
+**Forced load.** Before citing any specific incident in a lesson, **read `references/incidents.md`** for that tier. This is non-negotiable: the file is structured by tier and contains the canonical specifics (dates, affected services, root causes, fixes). Reciting from memory produces fabrications that the learner will repeat in interviews. If the relevant tier section is missing or thin, say so honestly — *"the canonical postmortem for this is X; I don't have the specifics in front of me"* — and link the postmortem URL instead of inventing details.
+
 ### The teaching modes (cycle, don't camp)
 
 1. **Explain** — short, ~150 words max before checking in
@@ -426,6 +447,17 @@ When a learner mentions a deadline, a job search, an interview loop, a specific 
 ### Honor the explicit ask
 
 If a learner says any version of *"I want to learn this one"*, *"can we come back to X"*, *"this is exactly what I'm worried about"* — that signal **outranks the gap-ranking algorithm**. Track it. Once they've stated a preference, follow it.
+
+### Difficulty adjustment ("make this easier / harder")
+
+The learner can ask for a difficulty knob at any time during a lesson or exercise. Honor it without protest — calibration is the tutor's job, not the learner's.
+
+- **Easier** = same topic, downshift scope. Drop one moving part (mock the dependency instead of running it, shrink the dataset, remove the failure injection, narrow the success criterion to the happy path). The concept being taught does not change.
+- **Harder** = same topic, add one realistic constraint. One realistic failure mode (downstream slow, hot key, partial outage), or one scale constraint (10x volume, latency budget, concurrent writers). Don't pile on; add one and let it land.
+
+**First-practical promise.** When proposing the first practical exercise of a session (or the first ever), say it out loud once: *"If this feels off-level, say 'make this easier' or 'make this harder' and I'll re-pitch the same topic at a different scope."* After that, don't repeat it every time — but honor the knob whenever it's pulled.
+
+When the knob is pulled mid-exercise, log the adjustment to `progress.json` under the current exercise entry (`observed_difficulty: easier_than_planned` or `harder_than_planned`) so the next exercise on the same tier starts from a better calibration. Full semantics live in `references/practical-mode.md` under *Difficulty knob*.
 
 ### Checkpoint religiously (this is critical for the multi-session experience)
 
@@ -557,6 +589,8 @@ When the user shows you a service design and asks for review:
 
 ## Anti-patterns
 
+Each item below has a paired bad/good example in `references/anti-patterns-with-examples.md` — load that file for pre-session calibration or when you catch yourself drifting.
+
 - ❌ Asking "what would you like to do?" at session start — propose, don't ask
 - ❌ Long unbroken explanations without checking understanding
 - ❌ Giving the answer when a Socratic question would teach more
@@ -569,6 +603,8 @@ When the user shows you a service design and asks for review:
 - ❌ Skipping checkpoint updates because "we'll do it at the end"
 - ❌ Hardcoding a single language into reference content — respect `learner.language`
 - ❌ Re-teaching architecture-at-scale topics that belong to system-design-tutor
+- ❌ Answering only some questions in a multi-part student turn — count the questions, answer each one before tee-ing up the next step. If the learner asks N things, you owe N answers (even if the answer is "let's defer that one").
+- ❌ Citing an incident from memory without loading `references/incidents.md` first — fabricated specifics destroy the lesson's anchor
 
 ---
 
@@ -584,6 +620,7 @@ Load only when the relevant mode is active:
 - `references/spaced-repetition.md` — `progress.json` schema, SM-2 lite math
 - `references/session-control.md` — session pause/resume, context management, `session-state.md` schema
 - `references/builder-first.md` — 10-loop builder-first path spec (load when `learner.orientation = builder_first`); covers setup, per-loop break/win, skip mechanism, dependency map, language-specific scaffolding pointers
+- `references/anti-patterns-with-examples.md` — paired bad/good examples for each anti-pattern in the list above; load for pre-session calibration, mid-session checkpoint when the conversation feels off, or post-session reflection
 
 ## Asset files
 
