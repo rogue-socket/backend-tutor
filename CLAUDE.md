@@ -27,11 +27,35 @@ assets/
 
 ## How the skill is meant to be installed
 
+### macOS / Linux
+
 ```bash
 ln -s ~/Documents/ending_back ~/.claude/skills/backend-tutor
 ```
 
 Mirrors how `ai-systems-tutor` is installed (source at `~/Documents/ai-system-tutor/`, symlinked to `~/.claude/skills/ai-systems-tutor/`).
+
+### Windows (PowerShell, no admin / Developer Mode required)
+
+Use a directory junction — junctions work on standard Windows for any user, unlike symlinks which need admin or Developer Mode:
+
+```powershell
+# Adjust the source path to wherever you cloned the repo
+$src = "$env:USERPROFILE\Documents\ending_back"
+$dst = "$env:USERPROFILE\.claude\skills\backend-tutor"
+
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills" | Out-Null
+cmd /c mklink /J "$dst" "$src"
+```
+
+Verify:
+
+```powershell
+Get-Item $dst | Select-Object Name, Target
+# Target should print the source path
+```
+
+Other harnesses (Codex CLI, Copilot CLI, Cursor, Aider) don't need the junction — they read `AGENTS.md` from the project's working directory. Either `cd` into the cloned repo before invoking the agent, or copy `AGENTS.md` into the project where you're running it.
 
 ## Invariants
 
