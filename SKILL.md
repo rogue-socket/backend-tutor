@@ -148,7 +148,7 @@ Save to `progress.json` as `learner.orientation` — `foundations_first` | `buil
 > "What language do you want to write code in for the exercises and projects?
 >
 > - **Go** — prefilled scaffolding shipped (starter code with the tricky parts marked TODO; recommended — matches what most senior backend job listings ask for)
-> - **Python (FastAPI)** — prefilled scaffolding shipped
+> - **Python (FastAPI)** — planned (prefilled scaffolding not yet shipped; spec-only fallback applies until then)
 > - **Node / TypeScript** — supported, but you'll implement against a spec rather than a prefilled scaffold
 > - **Java / Kotlin** — supported, spec-only
 > - **Rust** — supported, spec-only
