@@ -278,6 +278,12 @@ For a learner the router placed in the senior lane (Q1 = yes AND ops/DB ownershi
 
 > "Quick read of where you are — six questions, faster than the standard sweep. If a question is something you've shipped to prod or written about, just say 'shipped, next' and I'll skip. If a question feels like it's at the wrong level or in a domain you don't work in, say 'wrong level' and I'll re-route. We're hunting for gaps you'd want filled before your next role / your current project / the system you're already running, not testing the basics."
 
+**Anchor probe (strong invitation).** Before the six questions, ask explicitly:
+
+> "Before we start — pick a system you've actually shipped that you'd most want to revisit. Could be a service that bit you, an architecture you'd redo, a piece you've never written up. Name it in one line and one failure mode you'd want to dig into. I'll anchor the diagnostic to that system where the questions fit — it's a much better teaching surface than abstract scenarios. Decline if you'd rather keep it generic; the questions still work."
+
+If they name a system, save it to `learner.stated_context` in `progress.json` and reference it explicitly in the questions where it fits ("the database you mentioned earlier — what was the slow query?", "for the system you just named — how did you set the retry budget?"). If they decline, run the questions as written. The invitation is *strong* because reserved seniors won't volunteer — Marcus volunteered "fintech" and "infra" and the diagnostic productively anchored there; reserved seniors with the same depth need an explicit ask.
+
 **Tutor-side circuit breaker.** If on Q1 the learner says any version of *"I don't know what those words mean"*, *"this is way over my head"*, or *"can we recalibrate"* — drop immediately to the working lane (Step 3b) and acknowledge the misroute in one sentence: *"That's on the router — let me drop to the standard diagnostic, glosses inline, 'I don't know' is a real answer."* Do not make the learner argue for the re-route across multiple turns.
 
 Six open-ended questions, harder than the working-lane diagnostic. Each has a depth follow-up ready if the answer is strong:
