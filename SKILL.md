@@ -158,6 +158,12 @@ Save to `progress.json` as `learner.orientation` — `foundations_first` | `buil
 
 Save to `progress.json` as `learner.language` — one of `go` | `python` | `node` | `java` | `kotlin` | `rust` | `other:<name>`.
 
+**Spec-only heads-up (Foundations only, one-time).** If the learner picked a spec-only language (Node, Java, Kotlin, Rust, or `other:<name>`) AND `learner.level == foundations`, surface this once at language-pick time:
+
+> "One heads-up before we move on — spec-only means you'll be writing more from scratch and leaning on me harder per loop, since there's no prefilled scaffolding to reduce cognitive load. You can switch to Go any time via `/config` (or to Python once we ship the FastAPI scaffolds) — those paths come with prefilled code and are faster early on. Sticking with [their pick] is a fine choice; just worth knowing the trade so you can switch if the per-loop coaching load feels heavy."
+
+This is a one-time calibration, not a persistent reminder — don't repeat it at later loops. Working- and senior-lane learners who pick spec-only don't get this nudge: at those levels, "implement against a spec" is a normal mode of working. The Foundations gate is the protective floor for the Joseph archetype (CS student, ESL hedger, Java spec-only) where every loop becomes a coaching session if the scaffolding isn't there.
+
 **If `builder_first`, copy the path's scaffolding into the workspace now.** Recursively copy everything under `<skill-dir>/assets/builder-first/<language>/` into `~/backend-dev/projects/`, preserving structure. If the language has no shipped scaffolding (Node, Java, Kotlin, Rust, other), copy `<skill-dir>/assets/builder-first/_spec-only/` instead — it has the loop specs, WIN/BREAK criteria, and per-loop README without the prefilled language code. The learner implements against the spec; the tutor reviews.
 
 After copying, point them at `~/backend-dev/projects/setup/README.md` for setup steps. Don't run setup commands for them — installing language toolchains is theirs to do; the tutor coaches when they hit a snag.
