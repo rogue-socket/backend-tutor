@@ -1,6 +1,6 @@
 # PRD — LLM-as-judge test harness
 
-**Status:** design draft (architecture only; no code)
+**Status:** initial implementation shipped 2026-05-09 (`tests/run_llm.py`, 5 activation fixtures, 2 rubrics). Skip paths verified; live responder/judge round-trip not yet exercised. Mode-routing fixtures still TODO (waiting on persona-round-2 transcripts per the original "When to build" note).
 **Owner:** rogue-socket
 **Date:** 2026-05-09
 **Closes backlog item:** #3 from "What's next" — design the LLM-as-judge harness for activation + mode-routing tests deferred from G-C1.

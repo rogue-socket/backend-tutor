@@ -1,7 +1,8 @@
 # tests/
 
-Deterministic structural tests for the `backend-tutor` skill source.
-**Not** behavior tests — those need an LLM-as-judge harness (deferred).
+Two harnesses:
+- **Deterministic suite** (`run_all.py`) — structural tests, stdlib + `jsonschema` only.
+- **LLM-as-judge suite** (`run_llm.py`) — opt-in behavior tests; needs `ANTHROPIC_API_KEY` and the `anthropic` package. Skips cleanly if either is missing.
 
 ## Run
 
@@ -39,26 +40,51 @@ If a dependency is missing, the relevant test fails fast with a clear install hi
 | `test_progress_schema.py` | `assets/progress-template.json` and `tests/fixtures/progress_valid.json` both validate against `tests/schemas/progress.schema.json` (Draft 7). |
 | `test_frontmatter.py` | SKILL.md YAML frontmatter has required fields (`name`, `description`, `license`, `compatibility`, `metadata`); description is >=100 chars; harnesses and platforms are non-empty lists; `metadata.version` is semver. |
 
-## What's deliberately not tested here
+## LLM-as-judge suite (`run_llm.py`)
 
-- **Activation routing** — does the skill description trigger on "start the backend course" but not on "help me debug a Python script"? Needs an LLM-as-judge harness; deferred to a separate session.
-- **Mode routing** — does "review my schema" route to design review, "design Twitter at scale" route to system-design-tutor handoff, "teach me X" go to theory mode? Same harness dependency.
-- **CI integration** — defer until tests are stable locally and the layout settles.
+Opt-in behavior tests for activation and mode-routing — the parts the deterministic suite can't reach.
+
+```bash
+# Smoke (~5 fixtures, ~$0.10):
+ANTHROPIC_API_KEY=... python3 tests/run_llm.py --smoke
+
+# Full sweep:
+python3 tests/run_llm.py --full
+
+# Filter:
+python3 tests/run_llm.py --category activation
+
+# Release-gate mode (exit 1 on any failure; default is informational):
+python3 tests/run_llm.py --strict
+```
+
+Architecture (`prds/2026-05-09_llm-as-judge-harness.md`): responder = Sonnet 4.6 (with SKILL.md as cached system context), judge = Opus 4.7 (with structured JSON output via `output_config.format`). Different models on purpose — self-grading inflates pass rates.
+
+Skips cleanly with exit 0 if `ANTHROPIC_API_KEY` is unset or the `anthropic` package isn't installed. **Not wired into `run_all.py`** — the deterministic suite stays stdlib-only and CI-cheap.
+
+Adding fixtures: drop new lines into `tests/fixtures/llm/*.jsonl`. Smoke runs use `*_smoke.jsonl` only; full runs match all `*.jsonl`. Each line: `{id, category, expected, prompt, rubric_id}`. Rubrics live in `tests/rubrics/<rubric_id>.md`.
+
+## CI integration
+
+Deferred. Run locally for now.
 
 ## Layout
 
 ```
 tests/
   README.md
-  run_all.py
-  test_practical_coverage.py
-  test_reference_presence.py
-  test_progress_schema.py
-  test_frontmatter.py
+  run_all.py                       deterministic runner
+  run_llm.py                       LLM-as-judge runner (opt-in)
+  test_*.py                        deterministic tests
   schemas/
     progress.schema.json
   fixtures/
     progress_valid.json
+    llm/
+      activation_smoke.jsonl       smoke fixtures (run by --smoke / default)
+  rubrics/
+    activation.md
+    mode-routing.md
 ```
 
 ## Adding a test

@@ -1,0 +1,5 @@
+{"id": "trigger-01", "expected": "trigger", "category": "activation", "rubric_id": "activation", "prompt": "start the backend course"}
+{"id": "trigger-02", "expected": "trigger", "category": "activation", "rubric_id": "activation", "prompt": "teach me backend engineering from scratch"}
+{"id": "trigger-03", "expected": "trigger", "category": "activation", "rubric_id": "activation", "prompt": "I want to get better at writing production backend services in Go"}
+{"id": "no-trigger-01", "expected": "no-trigger", "category": "activation", "rubric_id": "activation", "prompt": "help me debug this Python list comprehension"}
+{"id": "no-trigger-02", "expected": "no-trigger", "category": "activation", "rubric_id": "activation", "prompt": "design Twitter for 100 million users"}
