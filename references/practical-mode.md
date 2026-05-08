@@ -176,6 +176,62 @@ After each exercise:
 
 ---
 
+## Difficulty knob ("make this easier / harder")
+
+The learner can ask for a difficulty adjustment at any time — before they start, while they're stuck, or after they finish. **Honor it without protest.** Calibration is the tutor's job; the learner pulling the knob is feedback, not failure.
+
+**Same topic, different scope.** The knob never changes *what* the exercise is teaching — only *how much* the learner has to wire up to feel it.
+
+### Easier (downshift one constraint)
+
+Pick exactly one and apply it; don't combine multiple downshifts in a single re-pitch:
+
+- **Mock the dependency.** Replace the real Postgres / Redis / queue with an in-memory map or a fake; the concept being taught (idempotency, single-flight, retry budgets) still lands.
+- **Shrink the dataset.** 10 rows instead of 1M; the slow-query exercise still teaches the index lookup, just without the wall-clock pain.
+- **Drop the failure injection.** Run the happy path only; come back to the partial outage / hot key / network blip on the next pass.
+- **Narrow the success criterion.** "Returns the same response on duplicate request" instead of "passes the full idempotency property test." Same concept, smaller surface.
+- **Pre-write the boilerplate.** Hand them the file/server scaffolding done; they fill in the 10-line core. Useful when the language ergonomics are eating the lesson.
+
+### Harder (add one constraint)
+
+Pick exactly one; the discipline is the same:
+
+- **Add one realistic failure.** Downstream service goes slow halfway through. Cache returns stale on a key that just expired. One worker dies mid-batch.
+- **Add one scale constraint.** 10x the QPS, the dataset, the concurrent writers. Or impose a latency budget: "p99 under 100ms." Or a memory budget.
+- **Remove a piece of scaffolding.** They wire up the connection pool / the retry layer / the test fixture themselves.
+- **Add an SLO or budget.** "Error rate must stay under 0.1% during the load test" — forces them to think about retry budgets and circuit breakers, not just throughput.
+
+### First-practical promise
+
+The first time the learner reaches a practical exercise in a session — and definitely the first time ever — say it once, in plain language:
+
+> "If this feels off-level when you sit down to it — too obvious, or too much at once — say *'make this easier'* or *'make this harder'* and I'll re-pitch the same topic at a different scope."
+
+After that, don't repeat the promise on every exercise — but honor the knob whenever it's pulled, and re-state the offer if a learner is visibly grinding (>20 minutes stuck on the same TODO without asking for hints) or visibly bored (finishes the core in <10 minutes).
+
+### Telemetry
+
+When the knob is pulled, log it on the exercise entry in `progress.json`:
+
+```json
+{
+  "date": "2026-05-08",
+  "topic": "T1.2.idempotency",
+  "dir": "projects/2026-05-08-idempotent-payments",
+  "status": "completed",
+  "type": "build-from-scratch",
+  "planned_difficulty": "standard",
+  "observed_difficulty": "easier_than_planned",
+  "adjustments": ["mocked Postgres with an in-memory map after learner asked"],
+  "hints_used_max_level": 3,
+  "takeaways": ["..."]
+}
+```
+
+`planned_difficulty` ∈ `easier | standard | harder`. `observed_difficulty` ∈ `easier_than_planned | as_planned | harder_than_planned`. The next exercise on the same tier should start from a calibration informed by these — if the last three were `harder_than_planned`, the next default is one notch easier.
+
+---
+
 ## Language-mismatch handling
 
 If `learner.language = node` and the exercise scaffold is Go-only:
