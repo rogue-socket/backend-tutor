@@ -13,7 +13,7 @@ Durable "someday/maybe" items — distinct from session-level Unresolved (which 
 
 ## Tier 2 — design changes worth discussing first
 
-- **F5. Add "what bit you in production?" probe to adjacent-domain mode only.** *Why:* When asked of Anika, surfaced a stale-cache story that was the perfect adjacent-domain anchor for Loop 6. Wei's session would have benefited from the same probe. Should be a standard step under `working_mode = adjacent_domain`, not asked of standard-mode learners.
+- ~~**F5. Add "what bit you in production?" probe to adjacent-domain mode only.**~~ Done 2026-05-08. Step 3a's adjacent-domain variant ends with an optional soft prompt — *"What's a backend-adjacent thing that bit you in production at work?"* — that, if answered, is saved to `learner.stated_context` and surfaces back in the matching tier lesson (stale-cache → T4, queue duplicate → T3.7, etc.). Soft, not required.
 - **F6. Senior-lane Step 3c should explicitly request a real shipped system.** *Why:* Marcus volunteered "fintech" and "infra"; the diagnostic anchored to those. A reserved senior wouldn't volunteer. Make it explicit: *"Pick a system you've shipped. Describe one failure mode you'd most want to revisit."* Then anchor diagnostic Q's to *that* system rather than abstract scenarios.
 - **F7. Warn at language-pick time when spec-only path will be rough.** *Why:* Tyler (Node spec-only, Working lane, confident) is fine. Joseph (Java spec-only, Foundations lane, ESL hedger) is going to need much more coaching support. Trigger: if `language` is spec-only AND (`level == foundations` OR diagnostic showed heavy hedge-register), add a one-line at language-pick time: "spec-only means more tutor coaching per loop; switch to a prefilled language any time."
 

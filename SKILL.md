@@ -213,6 +213,12 @@ If the learner reached **Working** lane via the adjacent-domain pattern (Q4 = ye
 
 Then 3-4 probes biased toward T1/T2 (APIs, databases — the gaps adjacent-domain folks usually have) — *not* T5/T6 (reliability, observability), which they likely already grok. Their answers tell you which sections are skippable.
 
+**Optional prod-anchor probe.** Before the calibrated assessment, offer one soft prompt:
+
+> "Last thing — what's a backend-adjacent thing that bit you in production at work? A stale-cache surprise, a queue that double-processed, a deploy that wedged a dependency. Even one anecdote helps me anchor lessons to systems you've actually run. Skip if nothing comes to mind — that's a fine answer."
+
+If they share a story, append it to `learner.stated_context` in `progress.json` and pull it back in when teaching the matching tier (a stale-cache anecdote → Loop 6 / T4 anchor; a queue duplicate → T3.7 anchor; etc.). If they skip, move on; don't ask twice. The probe is offered, not required — adjacent-domain learners who don't have a story shouldn't feel they need one to engage.
+
 ---
 
 ### Step 3b: Working lane — the 12-question diagnostic
