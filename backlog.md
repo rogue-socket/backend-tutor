@@ -2,6 +2,32 @@
 
 Durable "someday/maybe" items — distinct from session-level Unresolved (which is "next session"). Each entry: one-line item specific enough to act on cold, optional priority, **Why:** if non-obvious.
 
+## What's next (as of 2026-05-09)
+
+State: persona round 1 + Tier A/B/C audit work + spec drifts all closed. 4 branches live (`main` + 3 platform), 6/6 tests pass, decisions documented. The open items below are ranked by leverage — pick from the top.
+
+### High leverage
+
+1. **Persona round 2 — untested branches.** Same methodology as the §7 forced-load round (8 personas, paired pre/post analysis, write up findings under `test_findings/`). Targets: Case B cold resume (workspace exists, no `session-state.md` — 2-3 personas with varying gap), mid-lesson lane-recovery circuit breaker ("this is too basic / I'm drowning / you routed me wrong" within 1-2 lesson messages), multi-harness handoff (start in Claude Code, resume in Codex / Cursor / Copilot CLI via `~/backend-dev/session-state.md`), non-coder graceful exit. *Why high leverage:* the §7 round found 4 real content gaps in `incidents.md` plus validated the triple-belt fix. These four branches are completely untested in practice. Multi-hour effort; gets its own session.
+
+2. **Symlink install activation test.** Open a fresh Claude Code session in any working directory and try a trigger phrase like *"start the backend course"*. Verify backend-tutor's onboarding actually fires (Step 1 → Q1-Q4 → routing). The symlink at `~/.claude/skills/backend-tutor/` was created 2026-05-08 but couldn't be self-validated mid-session because the skill list was fixed at startup. *Why high leverage:* if the description doesn't trigger, the whole skill is dead-on-arrival regardless of the rest. ~10 min if it works; could surface description-tuning bugs that block real adoption.
+
+### Medium leverage
+
+3. **Design the LLM-as-judge harness.** G-C1 shipped deterministic tests; activation + mode-routing tests need a separate design pass because they require an LLM to grade outputs ("does this onboarding response correctly route to Foundations?"). Architecture-only first — no code yet. Open questions: which model evaluates, how to keep the rubric stable across runs, how to wire into `tests/run_all.py` without making CI flaky/expensive. *Why medium:* unlocks future automated coverage of the parts the deterministic tests can't reach (description triggers, lane routing decisions, hand-off boundaries). High-value but non-trivial design.
+
+4. **Loop 4 restructure check.** The `loop-4-auth/` "merge into main package" UX is the simplest pattern but means the file can't be type-checked in isolation — `go build ./...` fails standalone with a confusing error. Header comment warns; restructuring to `internal/auth/` (package `auth`) is the principled fix *if* the UX keeps biting in practice. Conditional: only do this if a learner reports the confusion in real use.
+
+### Low leverage / deprioritized
+
+5. **Authoring backlog** (blocks broader rollout, not personal use): Python (FastAPI) Loop 1 scaffold; Loops 2-10 spec-only mirrors; `assets/exercise-templates/` directory population. Skip until a non-Go learner actually shows up.
+
+### Stale state to refresh periodically
+
+- **Pin manifest staleness.** `LOOP_VERSIONS.md` `last_verified` is 2026-05-08; `tools/check-staleness.py` will start warning at the 180-day threshold (≈ 2026-11-04). Refresh: bump pgx if newer, run `go mod tidy` in each loop, update the manifest, re-date.
+
+---
+
 ## Tier 1 — small fixes from persona-test round (high-value, fast)
 
 *All four landed 2026-05-08 — see SKILL.md Step 2 (Q4 + routing table) and Step 2.5 (language gloss, switch-later line, optional goals probe), Step 3a adjacent-domain variant.*
