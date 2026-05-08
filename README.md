@@ -1,4 +1,6 @@
-# backend-tutor
+# backend-tutor — `codex-windows` branch
+
+> **Branch:** Windows + Codex CLI. For other (OS × harness) combos, switch to [`main`](https://github.com/rogue-socket/backend-tutor/tree/main) (universal) or one of the other platform branches.
 
 A portable, agent-driven course on **backend engineering** — runs in Claude Code, Codex CLI, Copilot CLI, Cursor, Aider, anywhere with file-read + file-write + shell.
 
@@ -85,28 +87,7 @@ No API keys. No Python deps. Backend-tutor is content-only; everything you run i
 
 ## Install
 
-See [`INSTALL.md`](INSTALL.md) for the full matrix (macOS / Linux / Windows × Claude Code / Codex CLI / Copilot CLI / Cursor / Aider).
-
-Quick path — macOS / Linux + Claude Code:
-
-```bash
-git clone https://github.com/rogue-socket/backend-tutor ~/Documents/backend-tutor
-ln -s ~/Documents/backend-tutor ~/.claude/skills/backend-tutor
-```
-
-Then `> start the backend tutor` in any Claude Code session. For Windows, Codex CLI, or other harnesses: see `INSTALL.md`.
-
-### Platform branches
-
-If you want a single-path README without conditionals, switch to the branch that matches your setup:
-
-| Branch | OS | Harness |
-|---|---|---|
-| [`cc-windows`](https://github.com/rogue-socket/backend-tutor/tree/cc-windows) | Windows | Claude Code |
-| [`codex-macos`](https://github.com/rogue-socket/backend-tutor/tree/codex-macos) | macOS / Linux | Codex CLI |
-| [`codex-windows`](https://github.com/rogue-socket/backend-tutor/tree/codex-windows) | Windows | Codex CLI |
-
-`main` covers every combo; the platform branches strip out the conditionals.
+See [`INSTALL.md`](INSTALL.md) — Windows + Codex CLI (PowerShell). No symlink step; Codex reads `AGENTS.md` from the cloned repo's working directory.
 
 ## Usage
 

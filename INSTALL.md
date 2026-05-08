@@ -1,88 +1,41 @@
-# Install
+# Install — Windows + Codex CLI
 
-This is the **`main`** branch — covers every supported (OS × harness) combo. If you want a leaner, single-path README, switch to one of the platform branches:
-
-| Branch | OS | Harness |
-|---|---|---|
-| [`main`](https://github.com/rogue-socket/backend-tutor/tree/main) | macOS / Linux / Windows | any |
-| [`cc-windows`](https://github.com/rogue-socket/backend-tutor/tree/cc-windows) | Windows | Claude Code |
-| [`codex-macos`](https://github.com/rogue-socket/backend-tutor/tree/codex-macos) | macOS / Linux | Codex CLI |
-| [`codex-windows`](https://github.com/rogue-socket/backend-tutor/tree/codex-windows) | Windows | Codex CLI |
-
-Platform branches strip the conditionals and ship just the path that applies to that combo. They're rebased onto `main` periodically (`tools/sync-platform-branches.sh`).
+This is the **`codex-windows`** branch. It ships only the Windows + OpenAI Codex CLI install path. For the full matrix (macOS / Linux / Claude Code / other harnesses), switch to [`main`](https://github.com/rogue-socket/backend-tutor/tree/main).
 
 ---
 
-## macOS / Linux
-
-### Claude Code
-
-```bash
-git clone https://github.com/rogue-socket/backend-tutor ~/Documents/backend-tutor
-ln -s ~/Documents/backend-tutor ~/.claude/skills/backend-tutor
-```
-
-Then in any Claude Code session: `> start the backend tutor`.
-
-### Codex CLI
-
-```bash
-git clone https://github.com/rogue-socket/backend-tutor ~/Documents/backend-tutor
-cd ~/Documents/backend-tutor
-codex "start the backend tutor"
-```
-
-Codex reads `AGENTS.md` from cwd; no symlink needed.
-
-### Copilot CLI / Cursor / Aider / others
-
-Same shape as Codex. `cd` into the cloned repo (or copy `AGENTS.md` into your project) before invoking the agent.
-
----
-
-## Windows
-
-### Claude Code (PowerShell, no admin / Developer Mode required)
-
-Use a directory junction — junctions work for any user without elevated permissions, unlike symlinks:
+## Clone (PowerShell)
 
 ```powershell
 git clone https://github.com/rogue-socket/backend-tutor "$env:USERPROFILE\Documents\backend-tutor"
-
-$src = "$env:USERPROFILE\Documents\backend-tutor"
-$dst = "$env:USERPROFILE\.claude\skills\backend-tutor"
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills" | Out-Null
-cmd /c mklink /J "$dst" "$src"
 ```
 
-Verify:
+Codex reads `AGENTS.md` from the project's working directory — there's no junction or symlink step. The repo *is* the install.
+
+## Use it
 
 ```powershell
-Get-Item $dst | Select-Object Name, Target
-```
-
-Then in any Claude Code session: `> start the backend tutor`.
-
-### Codex CLI (PowerShell)
-
-```powershell
-git clone https://github.com/rogue-socket/backend-tutor "$env:USERPROFILE\Documents\backend-tutor"
 cd "$env:USERPROFILE\Documents\backend-tutor"
 codex "start the backend tutor"
 ```
 
-Codex reads `AGENTS.md` from cwd; no junction needed.
+The agent picks up `AGENTS.md`, which routes it to `SKILL.md`. From there it runs the vibe check → lane → orientation + language → workspace setup → first lesson.
 
-### Other harnesses on Windows
+The workspace lives at `%USERPROFILE%\backend-dev\`. Resume any time with `/continue` (works across harnesses — the workspace is the bridge).
 
-Same shape — `cd` into the cloned repo before invoking the agent.
+## Update
 
----
-
-## Resume — any platform, any harness
-
-```
-> /continue
+```powershell
+cd "$env:USERPROFILE\Documents\backend-tutor"
+git pull origin codex-windows
 ```
 
-Reads `~/backend-dev/session-state.md` (or `%USERPROFILE%\backend-dev\session-state.md` on Windows) and picks up where you left off, even if the previous session ran in a different harness.
+## Note for projects
+
+If you'd rather invoke the tutor from inside another project's directory (so it has cwd context for codebase-specific questions), copy `AGENTS.md` into that project:
+
+```powershell
+Copy-Item "$env:USERPROFILE\Documents\backend-tutor\AGENTS.md" "C:\path\to\your\project\"
+```
+
+`AGENTS.md` is a thin pointer at `SKILL.md`; copying it into a project lets Codex find the tutor while sitting in your own codebase.
