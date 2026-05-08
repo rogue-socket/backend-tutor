@@ -667,6 +667,35 @@ Cross-link with `system-design-tutor` — that skill owns *architecture-level re
 
 ---
 
+## Path suggestions by stated goal
+
+When a learner's `learner.stated_goals` (captured in `progress.json` at onboarding per SKILL.md Step 2.5) maps to one of these common shapes, propose the tier walk below as a starting frame — then adjust from the diagnostic. Don't treat the walks as rigid; they're scaffolds, not checklists. If the learner's goal doesn't match any of these, walk tiers in default order (T0 → T11) gated on `progress.json`.
+
+### "Interview prep — 4 to 8 weeks"
+- **Walk:** T0 (HTTP, TLS, sockets) → T2.1–2.3 (SQL, indexes, transactions) → T3.1–3.4 + 3.6–3.8 (concurrency core, queues, retries) → T5.1–5.3 (timeouts, retries, circuit breakers) → T7.1 + 7.4 (tail latency, capacity estimation) → T11.1 + 11.3 (replication, sharding).
+- **Why this shape:** mirrors the topic mix that lands in mid/senior backend interviews — networking fundamentals, SQL fluency, concurrency traps, basic reliability primitives, back-of-envelope, and enough distributed-systems vocabulary to handle the design round. Skip T8 / T9 / T10 unless they come up; they rarely do in coding rounds.
+- **Pacing note:** 6 weeks ≈ one tier-cluster per week. If the learner has fewer than 4 weeks, drop T11 and concentrate on T0 + T2 + T3.
+
+### "First backend role / fresh grad / job-ready foundations"
+- **Walk:** linear T0 → T1 → T2 → T3 → T5, no skipping. Defer T6 / T7 / T8 / T11 to a second pass once they're in a job.
+- **Why this shape:** the gap between "I can write a CRUD handler" and "I can be trusted with on-call" is mostly T0 + T1 + T2 + T3 done thoroughly. Going wide before going deep teaches them vocabulary they can't yet ground in experience.
+- **Pacing note:** this is the default Foundations-lane walk; the goal label just confirms it.
+
+### "Build a payments / billing / financial service"
+- **Walk:** T1.2 (idempotency) + T1.5 (errors) + T1.13 (webhooks) → T2.3 (isolation, especially Serializable vs Snapshot) + T2.4 (schema for money) + T2.5 (online migrations) → T3.5 (idempotent handlers under crash) + T3.7 (delivery semantics) + T3.10 (saga + outbox) → T8.1 (OWASP API1/3/5 — BOLA / property-level authz) + T8.4 (secrets) + T8.6 (authz models).
+- **Why this shape:** financial workloads punish weak idempotency, weak isolation, and weak authz harder than any other domain. The walk front-loads those three. Skips most of T0 (assumed fluent), T6/T7 (revisit once the service is live), T11 (until single-region scale is exhausted).
+- **Pacing note:** anchor every concept to a concrete failure mode (double-charge, lost write, BOLA leak). Without that grounding, the topics feel abstract.
+
+### "Real-time systems / live chat / collaboration / presence"
+- See the dedicated **Path: Real-time systems** section below — it's a fully-specified cross-cutting path with its own builder-first loop (Loop 8).
+
+### "SRE / on-call readiness / production support"
+- **Walk:** T5 (entire — timeouts, retries, circuit breakers, hedging, health checks, flags, deploys, graceful shutdown) → T6 (entire — logs, metrics, RED/USE, tracing, SLOs, alerting, postmortems) → T7.1–7.3 (tail latency, profiling, load testing) → T9.1 + 9.4 (12-Factor, config) for context.
+- **Why this shape:** the "I get paged at 3am" muscles are concentrated in T5 + T6. T7 makes the difference between "I can mitigate" and "I can root-cause." Tier order matters less inside this walk — let the learner's actual on-call rotation drive which subtopic they need first.
+- **Pacing note:** this path benefits hugely from the incident-grounding rule (SKILL.md Step 3) — load `references/incidents.md` early and often.
+
+---
+
 ## Path: Real-time systems (cross-cutting)
 
 Not a tier — a *path* assembled from T0/T1/T3 plus a dedicated builder loop. Use when the learner has an explicit real-time goal (live chat, collaborative editing, presence, notifications).

@@ -65,7 +65,7 @@ The 22-section "Tutoring Skill: Global All-Inclusive Checklist" run against `end
 
 - **§3 workspace subdir naming**: skill uses `projects/`; checklist uses `exercises/`. Functionally equivalent. *Why drifted:* `projects/` reads as "the fun-stuff folder" for builder-first; `exercises/` is more neutral for foundations-first. Worth deciding rather than just renaming silently.
 - **§3 goal capture optional vs MUST**: F3 (just landed) makes the goals/timeline probe optional. Checklist says MUST. The optionality is intentional ("don't gate casual learners"); flag the divergence rather than fix.
-- **§5 path-suggestion-by-goal table** [next] *Why:* Verified missing 2026-05-08 — `references/curriculum.md` has a "Path: Real-time systems (cross-cutting)" section but no goal-driven path-suggestion table (e.g., "interview prep in 6 weeks → T0 / T2 / T5 / T7", "build a payments service → T1 / T2 / T8"). Add a small section to `curriculum.md` listing 3-5 common stated goals from `learner.stated_goals` and the tier walk that fits each. Cheap; ~15 min.
+- ~~**§5 path-suggestion-by-goal table**~~ Done 2026-05-08. `references/curriculum.md` now has a "Path suggestions by stated goal" section just above the real-time path, covering interview prep (4-8 wk), first backend role, payments/billing service, real-time (cross-link), and SRE / on-call readiness. Each entry: tier walk + why-this-shape + pacing note.
 - **§8 exercise tuning telemetry**: `progress-template.json` has `exercises.entries[]` but no per-entry difficulty schema (`planned_difficulty`, `observed_difficulty`, `hints_used_max_level`). Adding requires a schema bump.
 
 ## Authoring backlog (deprioritized for this user but blocks broader rollout)
