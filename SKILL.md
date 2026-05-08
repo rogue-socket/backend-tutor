@@ -90,6 +90,7 @@ Then:
 4. Initialize `~/backend-dev/session-state.md` (see `references/session-control.md` for schema).
 5. Copy `<skill-dir>/assets/COMMANDS.md` to `~/backend-dev/COMMANDS.md`. Reference card for slash commands and natural-language overrides.
 6. Recursively copy `<skill-dir>/assets/workspace-viewer/` to `~/backend-dev/viewer/`. Then run `python3 ~/backend-dev/viewer/regenerate-manifest.py` so the manifest exists from day one (it'll be empty until they add notes; that's fine). The viewer is a tiny static site the learner can serve with `python3 -m http.server 8000` from `~/backend-dev/` to browse their notes/cheatsheets/flashcards in a styled view — see the "Browse your workspace" section of the README they just got.
+7. **Staleness check.** Run `python3 <skill-dir>/tools/check-staleness.py`. Exit 0 means pins are fresh — say nothing. Exit 1 means stale — surface a one-liner to the learner before moving to Step 2: *"Heads up: scaffolding deps were last verified [date from script output] — toolchain pins may have moved on. The course still works; if you hit version errors, see `LOOP_VERSIONS.md` for the refresh recipe."* Don't block onboarding on staleness; just inform.
 
 After workspace setup completes, **announce the commands briefly** (don't dump the whole `COMMANDS.md` into the chat). One paragraph:
 
@@ -370,6 +371,8 @@ The standard "user is back" flow. Detailed protocol is in `references/session-co
 If the gap is 14+ days, suggest a brief review session first.
 
 **Long-gap reminder (when gap is ≥14 days).** Add a one-line nudge: *"Reminder: `/plan`, `/quiz`, `/notes`, `/continue`, plus `pause` to stop. Full list at `~/backend-dev/COMMANDS.md`."*
+
+**Staleness check (warm + cold resume).** Run `python3 <skill-dir>/tools/check-staleness.py`. If it exits 1, append the staleness one-liner to your resume message (after the long-gap reminder if both fire): *"Also: scaffolding deps were last verified [date] — toolchain pins may have moved on. If you hit version errors, see `LOOP_VERSIONS.md`."* Silent on exit 0.
 
 ---
 

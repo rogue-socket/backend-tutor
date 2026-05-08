@@ -10,7 +10,7 @@ The instructions branch on the language you picked (`learner.language` in `progr
 
 ### Go (recommended for builder-first)
 
-- macOS: `brew install go` — confirm with `go version` (need 1.22 or newer)
+- macOS: `brew install go` — confirm with `go version` (need 1.24 or newer; loop-2's pgx pin requires it). See `LOOP_VERSIONS.md` at the repo root for the current pin manifest.
 - Linux: official tarball at https://go.dev/dl/ — extract to `/usr/local/go`, add to PATH
 - Windows: official installer at https://go.dev/dl/
 

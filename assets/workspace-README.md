@@ -80,6 +80,10 @@ python3 -m http.server 8000
 
 The viewer reads `viewer/manifest.json` and fetches markdown files relative to the workspace root. Markdown rendering uses `marked` from a CDN, so the first load needs internet; after that it's cacheable. If `manifest.json` is missing, the viewer tells you to run the regenerate script.
 
+## Toolchain pin freshness
+
+The skill ships pinned versions of language toolchains and key libraries (Go, pgx, etc.) — see `LOOP_VERSIONS.md` at the skill source for the manifest. Pins are verified periodically; the tutor will warn you on resume if the verification date is stale (>6 months by default). If you hit a "this version isn't compatible" error, that file's "How to refresh" section is the recipe.
+
 ## Privacy
 
 This is a local directory. Nothing here is sent anywhere unless you choose to share it. The tutor reads what's in here as part of running sessions; that's it.
