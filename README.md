@@ -85,67 +85,38 @@ No API keys. No Python deps. Backend-tutor is content-only; everything you run i
 
 ## Install
 
-### macOS / Linux
+See [`INSTALL.md`](INSTALL.md) for the full matrix (macOS / Linux / Windows × Claude Code / Codex CLI / Copilot CLI / Cursor / Aider).
+
+Quick path — macOS / Linux + Claude Code:
 
 ```bash
 git clone https://github.com/rogue-socket/backend-tutor ~/Documents/backend-tutor
 ln -s ~/Documents/backend-tutor ~/.claude/skills/backend-tutor
 ```
 
-### Windows (PowerShell, no admin / Developer Mode required)
+Then `> start the backend tutor` in any Claude Code session. For Windows, Codex CLI, or other harnesses: see `INSTALL.md`.
 
-Use a directory junction:
+### Platform branches
 
-```powershell
-git clone https://github.com/rogue-socket/backend-tutor "$env:USERPROFILE\Documents\backend-tutor"
+If you want a single-path README without conditionals, switch to the branch that matches your setup:
 
-$src = "$env:USERPROFILE\Documents\backend-tutor"
-$dst = "$env:USERPROFILE\.claude\skills\backend-tutor"
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills" | Out-Null
-cmd /c mklink /J "$dst" "$src"
-```
+| Branch | OS | Harness |
+|---|---|---|
+| [`cc-windows`](https://github.com/rogue-socket/backend-tutor/tree/cc-windows) | Windows | Claude Code |
+| [`codex-macos`](https://github.com/rogue-socket/backend-tutor/tree/codex-macos) | macOS / Linux | Codex CLI |
+| [`codex-windows`](https://github.com/rogue-socket/backend-tutor/tree/codex-windows) | Windows | Codex CLI |
 
-Other harnesses (Codex CLI, Copilot CLI, Cursor, Aider) don't need the junction — they read `AGENTS.md` from the project's working directory. `cd` into the cloned repo before invoking the agent.
+`main` covers every combo; the platform branches strip out the conditionals.
 
 ## Usage
-
-### Claude Code
 
 ```
 > start the backend tutor
 ```
 
-The skill auto-routes from the trigger phrase. It runs the vibe check, picks a lane, asks for orientation + language, sets up `~/backend-dev/`, and starts the first lesson.
+The skill auto-routes from the trigger phrase: vibe check → lane → orientation + language → `~/backend-dev/` setup → first lesson. Resume any time with `> /continue` — works across harnesses (the workspace at `~/backend-dev/` is the bridge).
 
-### OpenAI Codex CLI
-
-```bash
-cd ~/Documents/backend-tutor
-codex "start the backend tutor"
-```
-
-Codex reads `AGENTS.md` from cwd, which points it at `SKILL.md`.
-
-### GitHub Copilot CLI
-
-```bash
-cd ~/Documents/backend-tutor
-gh copilot suggest "start the backend tutor"
-```
-
-### Cursor / Aider / others
-
-Same shape. They read `AGENTS.md` from the project's working directory. Either `cd` into this repo or copy `AGENTS.md` into the project where you're running the agent.
-
-### Resume
-
-From any harness:
-
-```
-> /continue
-```
-
-Reads `~/backend-dev/session-state.md` and picks up exactly where you left off — even if it was a different harness last time.
+See `INSTALL.md` for harness-specific invocations (Codex CLI, Copilot CLI, Cursor, Aider).
 
 ## Slash commands
 
