@@ -79,3 +79,33 @@ WebSockets, SSE, long-polling, real-time message protocols, presence, fan-out �
 **Why:** This pattern keeps the skill's authored content under version control independently of any single user's `~/.claude/` installation. Updates flow through git (`git pull` updates the source; the symlink reflects changes immediately). Distribution to other users is `git clone + ln -s`. The alternative — authoring directly inside `~/.claude/skills/` — couples skill authoring to one user's machine state.
 
 **How to apply:** Don't author skill content directly in `~/.claude/skills/backend-tutor/`. Always edit in `~/Documents/ending_back/` and rely on the symlink. When packaging for distribution to other users, ship the repo URL + a one-line `ln -s` command (mirroring ai-systems-tutor's install instructions).
+
+---
+
+## 2026-05-08 — Difficulty knob: one constraint at a time, never combined
+
+When the learner says "make this easier" or "make this harder", apply exactly one constraint shift — never combine multiple downshifts or multiple upshifts in the same re-pitch. Easier downshifts pick from a fixed list (mock the dependency / shrink dataset / drop failure injection / narrow success criterion / pre-write boilerplate). Harder upshifts pick from a fixed list (one realistic failure / one scale constraint / remove a piece of scaffolding / add an SLO or budget).
+
+**Why:** Calibration drifts unrecoverably when multiple constraints move at once. A learner who says "easier" wants the *concept* to land, not the entire exercise reshaped — mocking the dependency *and* shrinking the dataset *and* dropping the failure injection together changes what's being taught, not just how much. Keeping the knob to one shift per pull also makes the telemetry interpretable: `observed_difficulty: easier_than_planned` with `adjustments: ["mocked Postgres"]` is actionable signal for the next exercise; the same with three changes is noise. The first-practical promise is stated *once per session* (not per-exercise) for the same reason — repeated reminders teach the learner that "make this easier" is a normal mode rather than a calibration tool.
+
+**How to apply:** When the knob is pulled, pick the single change that's most likely to land the concept (easier) or surface the next layer (harder), apply it, log it as one entry to `adjustments[]`. If the learner is *still* off-level after one shift, that's a calibration miss worth logging as a separate `adjustments[]` entry with the second shift — not a license to combine them in a single re-pitch. Refer to `references/practical-mode.md` *Difficulty knob* for the canonical constraint lists; don't invent new constraint categories on the fly without updating that file.
+
+---
+
+## 2026-05-08 — Forced-load triple-belt: rule + hook + anti-pattern
+
+When a SKILL.md rule needs a specific reference file to be loaded before it can be followed (e.g., "ground every lesson in a real incident" needs `references/incidents.md`), wire it three ways: (1) the rule itself in the relevant section, (2) an explicit "load X first" hook paragraph in the same section, (3) a paired anti-pattern in the Anti-patterns block ("❌ Citing X from memory without loading the file first"). Don't rely on the rule alone.
+
+**Why:** The 2026-05-08 paired-persona round showed `references/incidents.md` was opened by 0 of 8 tutor agents despite the rule being present at `SKILL.md:384`. A rule that's authored but never followed is worse than no rule — it produces fabrications (wrong dates, wrong services, wrong root causes) that the learner repeats in interviews. The triple-belt approach acknowledges that LLM-driven tutors don't always follow file-load instructions when the topic is in their training data; an anti-pattern explicitly framing memory-recitation as a failure mode catches the cases where the hook gets ignored. Rule alone is a 0/8; rule + hook + anti-pattern is unverified-but-believed-better — needs another persona round to confirm.
+
+**How to apply:** When adding a rule that depends on a reference file (e.g., a new rule "ground every security topic in OWASP API Top 10 from `references/security-anchors.md`"), add all three pieces in the same edit: the rule in its section, the hook in the same section, the anti-pattern in the Anti-patterns block. Verify in the next persona round. If a rule keeps getting violated despite the triple-belt, escalate to inlining the canonical content in SKILL.md rather than relying on file-load.
+
+---
+
+## 2026-05-08 — Paired bad/good examples beat lists for anti-pattern calibration
+
+The Anti-patterns block in SKILL.md is a list of one-liners. The companion file `references/anti-patterns-with-examples.md` pairs each one-liner with a short bad example and a short good replacement. The pair is the durable artifact; the list is the index.
+
+**Why:** A list of anti-patterns is easy to skim and easy to forget. A paired bad/good example forces both a contentful contrast and a model of what the good move looks like. The bad/good split is deliberately *contentful*, not stylistic — the bad example often has nothing wrong with the prose, only with the *move* the tutor is making (e.g., answering a multi-part question with N/2 answers; teeing up the next step before finishing the current one). This shape transfers across other skills as a standard reference pattern. The audit framed it as a DIFFERENTIATOR vs siblings; the durable reason is calibration quality, not differentiation.
+
+**How to apply:** When adding a new anti-pattern to SKILL.md's Anti-patterns block, also append a paired entry to `references/anti-patterns-with-examples.md` with: a short concrete-context setup, a bad example with the move framed, and a good replacement that names what the move *should* have been. Keep both short — pattern-matching beats exhaustiveness. The block-list and the pair-file should always carry the same items; if they drift, the pair-file is the source of truth.
