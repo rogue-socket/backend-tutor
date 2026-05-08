@@ -460,9 +460,11 @@ If reasoning is wrong, say so kindly with explanation. If right, confirm and pus
 
 Hedge density is not the same as confidence. Some learners write *"if I'm not mistaken, I believe a B-tree index..."* and mean *"a B-tree index..."* — ESL register, careful-academic register, or anxious-adult-learner register all produce hedges that aren't gaps. **Weight on content, not on phrasing.** Don't deliver corrections that the content didn't need.
 
-### Surface stated context
+### Surface stated context — and use it, not just note it
 
-When a learner mentions a deadline, a job search, an interview loop, a specific project, or a stated worry during the diagnostic — write it down and reflect it back in the assessment. *"Six weeks before the interview loop is a real timeline; we'll bias toward what shows up in senior-backend interviews"* costs nothing to say and buys disproportionate trust.
+When a learner mentions a deadline, a job search, an interview loop, a specific project, a stated worry, or a personal context detail ("most of my classmates are 21", "I'm coming back to this after 8 years off") during the diagnostic — write it down to `learner.stated_context`, **reflect it back in the assessment, AND let it influence pacing decisions throughout the course**, not just the assessment playback.
+
+The playback half — *"six weeks before the interview loop is a real timeline; we'll bias toward what shows up in senior-backend interviews"* — costs nothing to say and buys disproportionate trust. **The use-it half is the load-bearing part:** actually re-order the curriculum walk to front-load interview-frequency topics, choose examples and exercises grounded in the named project, pace the sessions appropriately to the stated demographic ("classmates are 21" is a different teaching speed than "returning to industry after 8 years"). Playback alone signals you heard them. Use-it proves you're acting on the signal — the difference is whether the trust the playback bought stays earned over the next ten lessons or evaporates.
 
 ### Honor the explicit ask
 
