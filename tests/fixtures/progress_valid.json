@@ -1,0 +1,76 @@
+{
+  "started": "2026-05-07",
+  "learner": {
+    "level": "working",
+    "working_mode": "standard",
+    "orientation": "builder_first",
+    "language": "go",
+    "stated_goals": ["passing senior-backend interview loop in 6 weeks"],
+    "stated_context": ["currently shipping FastAPI services at $JOB", "wants to pivot to Go"]
+  },
+  "topics": {
+    "T0.3": {
+      "status": "solid",
+      "confidence": 4,
+      "last_reviewed": "2026-05-07",
+      "weak_points": []
+    },
+    "T2.3": {
+      "status": "in_progress",
+      "confidence": 2,
+      "last_reviewed": "2026-05-08",
+      "weak_points": ["write-skew vs phantom read distinction"]
+    }
+  },
+  "sr_queue": {
+    "items": [
+      {
+        "id": "T2.3.transactions::write-skew-vs-phantom",
+        "topic": "T2.3.transactions",
+        "question": "Postgres' default isolation level (Read Committed) prevents which anomalies, and which does it let through?",
+        "answer_outline": "Prevents: dirty reads. Lets through: non-repeatable read, phantom read, write skew, lost update.",
+        "interval_days": 3,
+        "ease": 2.5,
+        "due": "2026-05-11",
+        "history": [
+          {"date": "2026-05-08", "rating": "good", "interval_after": 3}
+        ]
+      }
+    ]
+  },
+  "exercises": {
+    "entries": [
+      {
+        "date": "2026-05-08",
+        "topic": "T2.5.migrations",
+        "dir": "exercises/2026-05-08-online-migration",
+        "status": "completed",
+        "type": "build-from-scratch",
+        "takeaways": ["expand/contract requires both old and new code paths to coexist for a release"],
+        "planned_difficulty": "standard",
+        "observed_difficulty": "as_planned",
+        "hints_used_max_level": 2,
+        "adjustments": []
+      }
+    ]
+  },
+  "loops": {
+    "current": 3,
+    "entries": [
+      {"loop": 1, "name": "bare CRUD", "status": "done", "completed": "2026-05-07"},
+      {"loop": 2, "name": "persistence + concurrency break", "status": "done", "completed": "2026-05-08"},
+      {"loop": 3, "name": "migrations + N+1", "status": "in_progress", "started": "2026-05-08"}
+    ]
+  },
+  "sessions": {
+    "entries": [
+      {
+        "date": "2026-05-07",
+        "duration_min": 45,
+        "topics_touched": ["T0.3", "T1.2"],
+        "loops_touched": [1]
+      }
+    ]
+  },
+  "_schema_version": 1
+}

@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "progress.json",
+  "description": "Schema for progress.json. Mirrors references/spaced-repetition.md and assets/progress-template.json. Empty-string enum members exist to allow the bare initial template to validate before onboarding fills it in.",
+  "type": "object",
+  "required": ["started", "learner", "topics", "sr_queue", "exercises", "loops", "sessions", "_schema_version"],
+  "properties": {
+    "started": {"type": "string"},
+    "learner": {
+      "type": "object",
+      "required": ["level", "working_mode", "orientation", "language", "stated_goals", "stated_context"],
+      "properties": {
+        "level": {"type": "string", "enum": ["", "foundations", "working", "senior"]},
+        "working_mode": {"type": "string", "enum": ["", "standard", "adjacent_domain"]},
+        "orientation": {"type": "string", "enum": ["", "foundations_first", "builder_first"]},
+        "language": {"type": "string", "pattern": "^(|go|python|node|java|kotlin|rust|other:.+)$"},
+        "stated_goals": {"type": "array", "items": {"type": "string"}},
+        "stated_context": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "topics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {"type": "string", "enum": ["unknown", "weak", "in_progress", "solid", "mastered"]},
+          "confidence": {"type": "integer", "minimum": 1, "maximum": 5},
+          "last_reviewed": {"type": "string"},
+          "weak_points": {"type": "array", "items": {"type": "string"}},
+          "fluency": {"type": "string"}
+        }
+      }
+    },
+    "sr_queue": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "topic", "question", "answer_outline", "interval_days", "ease", "due", "history"],
+            "properties": {
+              "id": {"type": "string"},
+              "topic": {"type": "string"},
+              "question": {"type": "string"},
+              "answer_outline": {"type": "string"},
+              "interval_days": {"type": "integer", "minimum": 1},
+              "ease": {"type": "number", "minimum": 1.3},
+              "due": {"type": "string"},
+              "history": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["date", "rating", "interval_after"],
+                  "properties": {
+                    "date": {"type": "string"},
+                    "rating": {"type": "string", "enum": ["again", "hard", "good", "easy"]},
+                    "interval_after": {"type": "integer", "minimum": 1}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "exercises": {
+      "type": "object",
+      "required": ["entries"],
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["date", "topic", "status"],
+            "properties": {
+              "date": {"type": "string"},
+              "topic": {"type": "string"},
+              "dir": {"type": "string"},
+              "status": {"type": "string"},
+              "type": {"type": "string"},
+              "takeaways": {"type": "array", "items": {"type": "string"}},
+              "planned_difficulty": {"type": "string", "enum": ["easier", "standard", "harder"]},
+              "observed_difficulty": {"type": "string", "enum": ["easier_than_planned", "as_planned", "harder_than_planned"]},
+              "hints_used_max_level": {"type": "integer", "minimum": 1, "maximum": 6},
+              "adjustments": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "loops": {
+      "type": "object",
+      "required": ["current", "entries"],
+      "properties": {
+        "current": {"oneOf": [{"type": "null"}, {"type": "integer", "minimum": 1, "maximum": 10}]},
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["loop", "name", "status"],
+            "properties": {
+              "loop": {"type": "integer", "minimum": 1, "maximum": 10},
+              "name": {"type": "string"},
+              "status": {"type": "string", "enum": ["not_started", "in_progress", "done", "skipped"]},
+              "started": {"type": "string"},
+              "completed": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "sessions": {
+      "type": "object",
+      "required": ["entries"],
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["date"],
+            "properties": {
+              "date": {"type": "string"},
+              "duration_min": {"type": "integer", "minimum": 0},
+              "topics_touched": {"type": "array", "items": {"type": "string"}},
+              "loops_touched": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 10}}
+            }
+          }
+        }
+      }
+    },
+    "_schema_version": {"type": "integer", "minimum": 1},
+    "_notes": {"type": "string"}
+  }
+}
