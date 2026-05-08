@@ -65,7 +65,7 @@ The 22-section "Tutoring Skill: Global All-Inclusive Checklist" run against `end
 
 - **§3 workspace subdir naming**: skill uses `projects/`; checklist uses `exercises/`. Functionally equivalent. *Why drifted:* `projects/` reads as "the fun-stuff folder" for builder-first; `exercises/` is more neutral for foundations-first. Worth deciding rather than just renaming silently.
 - **§3 goal capture optional vs MUST**: F3 (just landed) makes the goals/timeline probe optional. Checklist says MUST. The optionality is intentional ("don't gate casual learners"); flag the divergence rather than fix.
-- **§5 path-suggestion-by-goal table**: not seen in `SKILL.md`; might exist in `references/curriculum.md`. Verify before logging as a real gap.
+- **§5 path-suggestion-by-goal table** [next] *Why:* Verified missing 2026-05-08 — `references/curriculum.md` has a "Path: Real-time systems (cross-cutting)" section but no goal-driven path-suggestion table (e.g., "interview prep in 6 weeks → T0 / T2 / T5 / T7", "build a payments service → T1 / T2 / T8"). Add a small section to `curriculum.md` listing 3-5 common stated goals from `learner.stated_goals` and the tier walk that fits each. Cheap; ~15 min.
 - **§8 exercise tuning telemetry**: `progress-template.json` has `exercises.entries[]` but no per-entry difficulty schema (`planned_difficulty`, `observed_difficulty`, `hints_used_max_level`). Adding requires a schema bump.
 
 ## Authoring backlog (deprioritized for this user but blocks broader rollout)
@@ -80,3 +80,10 @@ The 22-section "Tutoring Skill: Global All-Inclusive Checklist" run against `end
 - **Bump pgx version pin.** `loop-2-persist/go.mod` pins `v5.5.5` (mid-2024); current is likely v5.7+. Not blocking but stale.
 - **Restructure Loop 4 into `internal/auth/` (package auth)** *if* the merge-into-main UX proves confusing in practice. *Why:* the current "drop into your main package" pattern is the simplest UX but means the file can't be type-checked in isolation; a learner running `go build ./...` in `loop-4-auth/` hits a confusing error. Header comment now warns; restructuring is the principled fix if it keeps biting.
 - **Test the symlink install end-to-end.** `ln -s ~/Documents/ending_back ~/.claude/skills/backend-tutor` → invoke skill → verify it actually onboards a learner. Untested.
+- **Verify §7 forced-load hook actually triggers in practice.** [next] *Why:* 2026-05-08 audit Tier A G-A6 added a rule + hook + anti-pattern triple-belt for `references/incidents.md` loading. Persona round on 2026-05-08 (pre-fix) showed 0 of 8 tutor agents loaded the file. Need another paired-persona round post-fix to confirm the triple-belt actually moves the needle. Same methodology as 2026-05-08's round, ideally same persona set for direct comparison. If still 0 loads, escalate to inlining canonical incidents in SKILL.md.
+
+## Remote / distribution state
+
+- **Local `main` is 10 commits ahead of `origin/main`** (as of 2026-05-08 13:03). Not pushed. *Why holding:* user hasn't said push.
+- **Remote repo may not exist yet.** README and AGENTS.md reference `https://github.com/rogue-socket/backend-tutor`; this URL is aspirational. `gh repo create rogue-socket/backend-tutor --public --source=. --remote=origin` is the next move if so. Confirm before pushing.
+- **Seed Tier C as GitHub issues.** `audits/2026-05-08_*-global-checklist.md` Tier C items (G-C1 tests/, G-C2 workspace viewer, G-C3 pinned-deps + staleness banner, G-C4 multi-branch distribution) are each "days, separate sessions" — good fit for `/to-issues`. Do this after the remote is created.
