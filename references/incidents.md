@@ -42,6 +42,11 @@ Format per entry:
 **What happened:** Not an incident — a sustained design discipline. Idempotency keys, date-based versioning per account, structured error envelope, careful rate limiting.
 **Teach with it:** what *good* looks like in T1.1 (REST design), T1.2 (idempotency), T1.3 (versioning), T1.5 (errors).
 
+### Idempotency-failure pattern (across payments / webhooks)
+**Sources:** stripe.com/blog "Designing robust and predictable APIs with idempotency"; AWS SQS dev guide (visibility timeout / at-least-once); GitHub webhook delivery docs; Stripe webhook signature & retry docs.
+**What happened:** Few public RCAs name idempotency-failure as the root cause — most teams ship this bug, catch it in staging or absorb it as user-visible weirdness, and don't write a public postmortem. The pattern, documented across canonical guidance: client retries a non-idempotent POST (network blip, lambda timeout, default retry middleware), server treats it as a new request, duplicate side-effect lands — double-charge, duplicate notification, repeated inventory decrement. Variant: server keys the dedup table on the idempotency key alone, ignoring a body hash; a buggy or malicious client reuses the key with a *different* payload, server returns the *cached* prior response while silently accepting the new write — worst-of-both-worlds. Stripe's design treats the idempotency-key row as a state machine (`started → succeeded/failed`) so a crash mid-flight can be resolved on retry without producing a second side-effect.
+**Teach with it:** the Stripe blog is the canonical *positive* anchor for T1.2 (idempotency keys server-side), T3.5 (idempotency in handlers under crash), T1.13 (webhooks — receiver-side dedup, signature verification with timing-safe comparisons). Pair with the Knight Capital entry below for the broader "duplicate execution destroys you" frame.
+
 ---
 
 ## T2 — Databases
