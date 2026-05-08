@@ -86,12 +86,12 @@ The 22-section "Tutoring Skill: Global All-Inclusive Checklist" run against `end
 
 ## `incidents.md` content gaps (surfaced by 2026-05-08 §7 verification round)
 
-Three of 8 personas in the §7 verify round hit topic-tier intersections where `references/incidents.md` had no named incident, forcing the tutor to honest-decline + redirect to public sources. Adding these would lift the from-file citation rate from 5/8 toward 8/8 on a re-run.
+*All four landed 2026-05-08. Each entry is framed as a pattern / positive-case-study (matching the existing Stripe T1 precedent) rather than a fabricated single-incident RCA, since public postmortems naming these specific failure modes are thin — the lessons live in canonical guidance docs and engineering-blog positive case studies.*
 
-- **T1 — idempotency-failure incident.** A payments double-charge or webhook redelivery RCA with date + amount + named system. Stripe's blog is the positive case study; need a *negative* one.
-- **T2 — bad-index-in-production incident.** Write amplification under a too-many-indexes table, or a non-CONCURRENTLY `CREATE INDEX` that took an `ACCESS EXCLUSIVE` lock and stalled checkout. GitHub or Shopify blogs likely have one.
-- **T3 — queue-redelivery / non-idempotent-consumer postmortem.** SQS visibility-timeout expiry → duplicate processing, or webhook retry → duplicate side-effect. Public RCAs are thin; conference talks exist.
-- **T3/T11 — saga / outbox case study.** Uber Cadence/Temporal origin posts and eBay's outbox-pattern writeups are the canonical sources; pick one, summarize the failure mode it solved.
+- ~~**T1 — idempotency-failure incident.**~~ Done. Pattern entry citing Stripe blog (positive anchor) + AWS SQS / GitHub / Stripe webhook docs; covers retry-without-dedup and key-without-body-hash variants.
+- ~~**T2 — bad-index-in-production incident.**~~ Done. Pattern entry citing Strong Migrations + gh-ost + Postgres `CONCURRENTLY` docs + Use the Index Luke; covers DDL-lock and write-amplification variants. Tooling existence is the evidence the failure mode is widespread.
+- ~~**T3 — queue-redelivery / non-idempotent-consumer postmortem.**~~ Done. Pattern entry citing AWS SQS / Lambda / Kafka / webhook docs; covers SQS visibility-timeout, Kafka rebalance, and webhook 5xx-retry variants. Universal mitigation: dedup table keyed on stable application-domain message ID.
+- ~~**T3/T11 — saga / outbox case study.**~~ Done. Positive-case-study entry citing Uber Cadence/Temporal origin + microservices.io outbox reference + Debezium + Richardson's Microservices Patterns + Newman's Building Microservices 2e. Senior-grade build-vs-adopt frame.
 
 ## Remote / distribution state
 
