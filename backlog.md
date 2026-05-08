@@ -80,7 +80,16 @@ The 22-section "Tutoring Skill: Global All-Inclusive Checklist" run against `end
 - **Bump pgx version pin.** `loop-2-persist/go.mod` pins `v5.5.5` (mid-2024); current is likely v5.7+. Not blocking but stale.
 - **Restructure Loop 4 into `internal/auth/` (package auth)** *if* the merge-into-main UX proves confusing in practice. *Why:* the current "drop into your main package" pattern is the simplest UX but means the file can't be type-checked in isolation; a learner running `go build ./...` in `loop-4-auth/` hits a confusing error. Header comment now warns; restructuring is the principled fix if it keeps biting.
 - **Test the symlink install end-to-end.** `ln -s ~/Documents/ending_back ~/.claude/skills/backend-tutor` → invoke skill → verify it actually onboards a learner. Untested.
-- **Verify §7 forced-load hook actually triggers in practice.** [next] *Why:* 2026-05-08 audit Tier A G-A6 added a rule + hook + anti-pattern triple-belt for `references/incidents.md` loading. Persona round on 2026-05-08 (pre-fix) showed 0 of 8 tutor agents loaded the file. Need another paired-persona round post-fix to confirm the triple-belt actually moves the needle. Same methodology as 2026-05-08's round, ideally same persona set for direct comparison. If still 0 loads, escalate to inlining canonical incidents in SKILL.md.
+- ~~**Verify §7 forced-load hook actually triggers in practice.**~~ Done 2026-05-08. Post-fix paired-persona round: **8/8 loaded `references/incidents.md` before citing specifics** (vs. 0/8 pre-fix). 5/8 cited from the file with full specifics; 3/8 correctly identified file gaps and invoked the don't-fabricate clause rather than confabulate. Triple-belt validated; no need to escalate to inlining. Full writeup: `test_findings/2026-05-08_17-11-00_incidents-forced-load-verify.md`. Surfaced 4 content gaps in `incidents.md` itself — see new authoring item below.
+
+## `incidents.md` content gaps (surfaced by 2026-05-08 §7 verification round)
+
+Three of 8 personas in the §7 verify round hit topic-tier intersections where `references/incidents.md` had no named incident, forcing the tutor to honest-decline + redirect to public sources. Adding these would lift the from-file citation rate from 5/8 toward 8/8 on a re-run.
+
+- **T1 — idempotency-failure incident.** A payments double-charge or webhook redelivery RCA with date + amount + named system. Stripe's blog is the positive case study; need a *negative* one.
+- **T2 — bad-index-in-production incident.** Write amplification under a too-many-indexes table, or a non-CONCURRENTLY `CREATE INDEX` that took an `ACCESS EXCLUSIVE` lock and stalled checkout. GitHub or Shopify blogs likely have one.
+- **T3 — queue-redelivery / non-idempotent-consumer postmortem.** SQS visibility-timeout expiry → duplicate processing, or webhook retry → duplicate side-effect. Public RCAs are thin; conference talks exist.
+- **T3/T11 — saga / outbox case study.** Uber Cadence/Temporal origin posts and eBay's outbox-pattern writeups are the canonical sources; pick one, summarize the failure mode it solved.
 
 ## Remote / distribution state
 
