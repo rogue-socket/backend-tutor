@@ -142,6 +142,13 @@ After grading, briefly explain *why* their answer landed where it did. Review is
       "confidence": 2,
       "last_reviewed": "2026-05-08",
       "weak_points": ["write-skew vs phantom read distinction"]
+    },
+    "T7.4": {
+      "status": "solid",
+      "fluency": "slow",
+      "confidence": 4,
+      "last_reviewed": "2026-05-08",
+      "weak_points": ["recall-under-pressure on Little's Law"]
     }
   },
   "sr_queue": {
@@ -183,6 +190,8 @@ After grading, briefly explain *why* their answer landed where it did. Review is
 **Status values for topics:** `unknown` | `weak` | `in_progress` | `solid` | `mastered`. `mastered` is rare — only after 3+ successful SR reviews at intervals >14 days.
 
 **Confidence:** 1-5, learner's self-rating, used as a tiebreaker for what to review next.
+
+**Fluency (optional, per-topic).** Values: `unknown` | `slow` | `building` | `fluent`. Tracks **speed-under-pressure** as a separate axis from `status` (which tracks knowledge presence). A topic can be `status: solid` AND `fluency: slow` at the same time — the learner has the knowledge but can't recall it fast enough to use it under interview / on-call / mock-design pressure. The tutor uses `fluency: slow` to schedule **drilling** (timed flashcards, rapid-fire questions, mini whiteboard exercises) rather than re-teaching, which is the wrong cure for this kind of gap. Default unset; set when the diagnostic or a review surfaces a recall-speed issue distinct from a knowledge issue. The Joseph archetype (CS student, T7 capacity-estimation knowledge present but slow under pressure) is the motivating case.
 
 ---
 

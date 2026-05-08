@@ -28,7 +28,7 @@
           "confidence": {"type": "integer", "minimum": 1, "maximum": 5},
           "last_reviewed": {"type": "string"},
           "weak_points": {"type": "array", "items": {"type": "string"}},
-          "fluency": {"type": "string"}
+          "fluency": {"type": "string", "enum": ["unknown", "slow", "building", "fluent"]}
         }
       }
     },
