@@ -17,6 +17,7 @@ This directory holds your personal progress for the **backend-tutor** course. Ev
 │   └── loop-N-<slug>/       ← one folder per builder-first loop
 ├── reviews/                 ← mock interview / design review writeups
 ├── flashcards/              ← optional — exported flashcard decks per topic
+├── viewer/                  ← static workspace viewer (see "Browse your workspace")
 └── meta/                    ← anything else the tutor wants to keep around
 ```
 
@@ -57,6 +58,27 @@ Everything in `~/backend-dev/` is portable across tool-using agents. If you star
 - **`progress.json` got corrupted** — keep a backup before editing manually; failing that, the tutor can rebuild from your notes + brief recalibration
 - **You skipped 3 weeks** — run `/quiz` first; the SR queue will be hungry
 - **You want to switch language or orientation mid-course** — say so; the tutor will handle the migration cleanly
+
+## Browse your workspace
+
+Your notes, cheatsheets, and flashcards are plain markdown — readable anywhere. The bundled `viewer/` is a tiny static site that renders them with a sidebar so you can skim everything at once.
+
+**One-time setup:** `viewer/` is already in your workspace. Whenever you've added or edited files, regenerate the manifest:
+
+```bash
+cd ~/backend-dev
+python3 viewer/regenerate-manifest.py
+```
+
+**Serve it:**
+
+```bash
+cd ~/backend-dev
+python3 -m http.server 8000
+# open http://localhost:8000/viewer/
+```
+
+The viewer reads `viewer/manifest.json` and fetches markdown files relative to the workspace root. Markdown rendering uses `marked` from a CDN, so the first load needs internet; after that it's cacheable. If `manifest.json` is missing, the viewer tells you to run the regenerate script.
 
 ## Privacy
 

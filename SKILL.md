@@ -89,6 +89,7 @@ Then:
 3. Initialize `~/backend-dev/progress.json` from `<skill-dir>/assets/progress-template.json`, filling in `started` (today's date). Leave `level`, `orientation`, and `language` blank — Steps 2 / 2.5 set them.
 4. Initialize `~/backend-dev/session-state.md` (see `references/session-control.md` for schema).
 5. Copy `<skill-dir>/assets/COMMANDS.md` to `~/backend-dev/COMMANDS.md`. Reference card for slash commands and natural-language overrides.
+6. Recursively copy `<skill-dir>/assets/workspace-viewer/` to `~/backend-dev/viewer/`. Then run `python3 ~/backend-dev/viewer/regenerate-manifest.py` so the manifest exists from day one (it'll be empty until they add notes; that's fine). The viewer is a tiny static site the learner can serve with `python3 -m http.server 8000` from `~/backend-dev/` to browse their notes/cheatsheets/flashcards in a styled view — see the "Browse your workspace" section of the README they just got.
 
 After workspace setup completes, **announce the commands briefly** (don't dump the whole `COMMANDS.md` into the chat). One paragraph:
 
@@ -651,3 +652,4 @@ Load only when the relevant mode is active:
 - `assets/COMMANDS.md` — slash command + override reference card
 - `assets/exercise-templates/` — language-specific scaffolds for common exercise types (Go, Python; spec-only for others)
 - `assets/builder-first/<language>/` — builder-first project scaffolding per language; `_spec-only/` for languages without prefilled code
+- `assets/workspace-viewer/` — static workspace viewer (`index.html` + `manifest.template.json` + `regenerate-manifest.py`); copied to `~/backend-dev/viewer/` at workspace setup
