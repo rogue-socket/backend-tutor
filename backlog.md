@@ -14,7 +14,7 @@ State: persona round 1 + Tier A/B/C audit work + spec drifts all closed. 4 branc
 
 ### Medium leverage
 
-3. **Design the LLM-as-judge harness.** G-C1 shipped deterministic tests; activation + mode-routing tests need a separate design pass because they require an LLM to grade outputs ("does this onboarding response correctly route to Foundations?"). Architecture-only first — no code yet. Open questions: which model evaluates, how to keep the rubric stable across runs, how to wire into `tests/run_all.py` without making CI flaky/expensive. *Why medium:* unlocks future automated coverage of the parts the deterministic tests can't reach (description triggers, lane routing decisions, hand-off boundaries). High-value but non-trivial design.
+3. ~~**Design the LLM-as-judge harness.**~~ Design landed 2026-05-09 — see `prds/2026-05-09_llm-as-judge-harness.md`. Architecture: responder ≠ judge (Sonnet responds, Opus judges); JSONL fixtures + markdown rubrics; separate `tests/run_llm.py` runner with `--smoke` / `--full` modes; never wired into `tests/run_all.py` default. Implementation deferred until after persona round 2 (so fixtures can come from real transcripts). Effort estimate: 1-2 sessions, ~$0.10/smoke + ~$1-3/full nightly.
 
 4. **Loop 4 restructure check.** The `loop-4-auth/` "merge into main package" UX is the simplest pattern but means the file can't be type-checked in isolation — `go build ./...` fails standalone with a confusing error. Header comment warns; restructuring to `internal/auth/` (package `auth`) is the principled fix *if* the UX keeps biting in practice. Conditional: only do this if a learner reports the confusion in real use.
 
