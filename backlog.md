@@ -65,10 +65,10 @@ The 22-section "Tutoring Skill: Global All-Inclusive Checklist" run against `end
 
 ### Misc spec drifts (small, may not be worth fixing)
 
-- **§3 workspace subdir naming**: skill uses `projects/`; checklist uses `exercises/`. Functionally equivalent. *Why drifted:* `projects/` reads as "the fun-stuff folder" for builder-first; `exercises/` is more neutral for foundations-first. Worth deciding rather than just renaming silently.
-- **§3 goal capture optional vs MUST**: F3 (just landed) makes the goals/timeline probe optional. Checklist says MUST. The optionality is intentional ("don't gate casual learners"); flag the divergence rather than fix.
+- ~~**§3 workspace subdir naming**~~ Decided 2026-05-09. Kept `projects/`. See `decisions.md` 2026-05-09 *Workspace subdir naming*.
+- ~~**§3 goal capture optional vs MUST**~~ Decided 2026-05-09. Kept optional (intentional divergence from audit). See `decisions.md` 2026-05-09 *Goal/timeline capture is optional*.
 - ~~**§5 path-suggestion-by-goal table**~~ Done 2026-05-08. `references/curriculum.md` now has a "Path suggestions by stated goal" section just above the real-time path, covering interview prep (4-8 wk), first backend role, payments/billing service, real-time (cross-link), and SRE / on-call readiness. Each entry: tier walk + why-this-shape + pacing note.
-- **§8 exercise tuning telemetry**: `progress-template.json` has `exercises.entries[]` but no per-entry difficulty schema (`planned_difficulty`, `observed_difficulty`, `hints_used_max_level`). Adding requires a schema bump.
+- ~~**§8 exercise tuning telemetry**~~ Done (already shipped). Schema bump landed in the Tier A round: `tests/schemas/progress.schema.json` now has `planned_difficulty` (enum), `observed_difficulty` (enum), `hints_used_max_level` (1-6), and `adjustments[]` on each `exercises.entries[]` item. `assets/progress-template.json` `_notes` documents the four fields. The backlog item was stale-as-described.
 
 ## Authoring backlog (deprioritized for this user but blocks broader rollout)
 

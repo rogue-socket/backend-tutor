@@ -109,3 +109,33 @@ The Anti-patterns block in SKILL.md is a list of one-liners. The companion file 
 **Why:** A list of anti-patterns is easy to skim and easy to forget. A paired bad/good example forces both a contentful contrast and a model of what the good move looks like. The bad/good split is deliberately *contentful*, not stylistic — the bad example often has nothing wrong with the prose, only with the *move* the tutor is making (e.g., answering a multi-part question with N/2 answers; teeing up the next step before finishing the current one). This shape transfers across other skills as a standard reference pattern. The audit framed it as a DIFFERENTIATOR vs siblings; the durable reason is calibration quality, not differentiation.
 
 **How to apply:** When adding a new anti-pattern to SKILL.md's Anti-patterns block, also append a paired entry to `references/anti-patterns-with-examples.md` with: a short concrete-context setup, a bad example with the move framed, and a good replacement that names what the move *should* have been. Keep both short — pattern-matching beats exhaustiveness. The block-list and the pair-file should always carry the same items; if they drift, the pair-file is the source of truth.
+
+---
+
+## 2026-05-09 — Workspace subdir naming: `projects/`, not `exercises/`
+
+The hands-on subdirectory inside `~/backend-dev/` is named `projects/`. The audit-checklist proposed `exercises/`; we kept `projects/`.
+
+**Why:** `projects/` reads as "the fun-stuff folder" for builder-first learners — Loop 1 ships a working CRUD service that grows across loops, which is *one project that evolves*, not a sequence of disconnected exercises. `exercises/` is more neutral and would work for foundations-first standalone exercises, but builder-first is the orientation we expect to drive the most engagement, and the framing matters: a learner sees `~/backend-dev/projects/loop-3-migrations/` and gets the right mental model that this is real, owned code. Keeping `projects/` also avoided a sweep across SKILL.md, references, assets, and workspace-README that would have churned for naming-only reasons.
+
+**How to apply:** Don't rename `projects/` to `exercises/` (the inverse drift would be cosmetic-cost-only). When adding a foundations-first standalone exercise that doesn't fit the builder-first single-project model, drop it under `projects/exercises/<slug>/` rather than spinning up a sibling top-level dir — the `projects/` name is broad enough to cover both cases. If a learner asks why their workspace says "projects" when they're doing standalone exercises, the answer is "same dir, two flavors of work."
+
+---
+
+## 2026-05-09 — Goal/timeline capture is optional, not required
+
+SKILL.md Step 2.5's stated-goals/timeline probe ("interview prep / first backend role / payments service / SRE readiness / etc.") is optional. The audit checklist said capture MUST happen. We diverge intentionally.
+
+**Why:** Casual learners ("I just want to learn backend, no specific deadline") don't have a goal-shaped answer to give, and forcing them to produce one creates friction at the exact moment we want momentum (Step 2.5 is right before the diagnostic, before any value has been delivered). The probe is *useful* when the learner has a goal — it routes them through `references/curriculum.md` § "Path suggestions by stated goal" — but useful-when-present doesn't justify required-for-all. Persona round F3 surfaced this; the optional-with-fallback design landed there.
+
+**How to apply:** When the learner doesn't volunteer a goal/timeline, don't re-ask. Save `learner.stated_goals: null` and proceed. If they later mention one mid-course (mock interview, deadline drops), capture it then via `/config` and adjust pacing. Don't gate diagnostic entry on goal capture under any circumstances. If a future audit-style review re-flags this as MUST, rebut with the persona-round evidence.
+
+---
+
+## 2026-05-09 — Multi-branch distribution: small per-branch divergence + sync script
+
+`main` is the universal branch. Three platform branches (`cc-windows`, `codex-macos`, `codex-windows`) each carry exactly one commit on top of `main`: a rewritten `INSTALL.md` (single-path) plus a small README banner naming the branch. `tools/sync-platform-branches.sh` rebases the platform branches onto main and pushes with `--force-with-lease`. Conflicts only arise when main itself touches `INSTALL.md` or the README banner region.
+
+**Why:** §20 of the audit checklist called for multi-branch distribution as a DIFFERENTIATOR. The naive shape — branches that diverge across many files — would create perpetual rebase tax for one maintainer. Constraining divergence to two files (`INSTALL.md` + README's top region) keeps the maintenance cost near zero while still delivering the §20 benefit (a Windows + Codex CLI learner gets a single-path README without conditionals). The full multi-platform matrix lives in main's `INSTALL.md` so search-engine landings on main aren't broken; the platform branches are the leaner experience for users who already know what combo they're on.
+
+**How to apply:** When updating install/onboarding content, prefer touching files *outside* `INSTALL.md` and the README banner — those changes auto-propagate to the platform branches via rebase. When you must touch `INSTALL.md`, expect to either (a) update the platform branches' `INSTALL.md` files in matching ways, or (b) accept conflicts during the next sync run and resolve by hand once. Run `tools/sync-platform-branches.sh --dry-run` after any main commit that touches install content; run without `--dry-run` to push. Don't add a fifth platform branch without re-evaluating whether the linear divergence cost still pencils out — at some count (probably ~6+) the matrix model breaks down and a generated-from-main approach becomes cheaper.
