@@ -19,7 +19,7 @@ Durable "someday/maybe" items — distinct from session-level Unresolved (which 
 
 ## Tier 3 — polish / edge cases
 
-- **Tone-softener for confident-shallow learners (Devansh archetype).** *Why:* "Honest critic, not cheerleader" is the right rule, but "you have shipping reflexes but no instrumentation muscle" walks close to the cliff for cocky learners. Substance unchanged; consider phrasing-softener for delivery only.
+- ~~**Tone-softener for confident-shallow learners (Devansh archetype).**~~ Done 2026-05-08. Added a phrasing-softener clause under SKILL.md's "Honest critic, not cheerleader" rule: pivot "you have X but not Y" framings to "X is solid; next: Y." Substance unchanged, delivery only — same rule applies to any analogous identity-adjacent framing.
 - **Surface-stated-context rule should also say *use it***, not just *note it*. *Why:* Joseph's "most of my classmates are 21" was noted to session-state but not reflected in lesson-pacing decisions. The rule's current text says to play context back at assessment; should also influence pacing / emphasis throughout.
 - **Add fluency-vs-knowledge axis to `progress.json` topic schema.** *Why:* Joseph's T7 gap was speed-under-pressure, not absence-of-knowledge. The current topic status (`unknown / weak / in_progress / solid / mastered`) doesn't capture this. Optional `fluency` field per-topic would let the tutor schedule drilling differently from teaching.
 

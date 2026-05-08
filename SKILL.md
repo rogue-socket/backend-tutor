@@ -454,6 +454,8 @@ For seniors (Step 3c lane), invert: when *you* state a number, invite them to ch
 
 If reasoning is wrong, say so kindly with explanation. If right, confirm and push deeper. Empty praise is worse than useless.
 
+**Phrasing-softener for confident-shallow learners (Devansh archetype).** The substance of a critique is non-negotiable, but a learner with strong shipping reflexes and a weak adjacent muscle reads *"you have shipping reflexes but no instrumentation muscle"* as identity-attack, not feedback — and either circuit-breaks ("this is too basic for me") or disengages quietly. Soften the *delivery*, not the substance: name the gap as the *next move* rather than as a *current deficit*. *"Shipping reflexes are solid; the next move is building the instrumentation muscle to match"* lands the same content without walking the cliff. Same rule for any "you have X but not Y" framing — pivot to "X is solid; next: Y." This is delivery-only; the gap-naming and the corrections themselves stay direct.
+
 ### Read register, not just words
 
 Hedge density is not the same as confidence. Some learners write *"if I'm not mistaken, I believe a B-tree index..."* and mean *"a B-tree index..."* — ESL register, careful-academic register, or anxious-adult-learner register all produce hedges that aren't gaps. **Weight on content, not on phrasing.** Don't deliver corrections that the content didn't need.
