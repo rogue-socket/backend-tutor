@@ -66,6 +66,11 @@ Format per entry:
 **What happened:** Metadata service overload caused a 5-hour DynamoDB outage in us-east-1, which cascaded to ~20+ AWS services that depend on it.
 **Teach with it:** metadata services as the silent dependency; why "managed = no ops" is a lie. T10.3.
 
+### Bad-index-in-production pattern (DDL locks / write amplification)
+**Sources:** strongmigrations.com (Andrew Kane / Ankane — Rails-flavored but rules apply everywhere); github.com/github/gh-ost (MySQL online schema-change tool, written *because* of this failure mode); Postgres docs on `CREATE INDEX CONCURRENTLY`; Use the Index, Luke! (Markus Winand).
+**What happened:** Two recurring failure shapes, both extensively documented in public engineering practice, neither typically getting a single named-incident RCA: **(1) Non-CONCURRENTLY index creation**: `CREATE INDEX` on Postgres without `CONCURRENTLY` (or any DDL on MySQL without an online-DDL tool) takes an `ACCESS EXCLUSIVE` lock on the table for the duration of the build — minutes-to-hours on large tables. Engineers have stalled checkout, login, and feed-write paths this way. The Strong Migrations gem refuses to run a non-concurrent index migration in CI for this reason; gh-ost exists because the same problem is industry-wide on MySQL. **(2) Write amplification from too many indexes**: every additional index on a write-heavy table turns each insert/update into N+1 disk writes plus N index-page splits. Tables with 10+ indexes routinely run inserts an order of magnitude slower than expected; batch jobs that used to take 10 minutes start taking hours, and the team blames the application before realizing the index list grew silently over years.
+**Teach with it:** T2.2 (indexes and the planner — every index is a trade); T2.5 (online migrations — `CONCURRENTLY` is non-negotiable, expand/contract for `NOT NULL` adds, gh-ost-style for MySQL); T2.6 (ORM-generated index pathologies). The existence of gh-ost / pg_repack / Strong Migrations is the *evidence* the failure mode is widespread enough to justify dedicated tooling.
+
 ---
 
 ## T3 — Concurrency & async
