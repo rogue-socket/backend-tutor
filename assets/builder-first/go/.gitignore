@@ -1,0 +1,4 @@
+# Built binaries from the standalone Go modules in this tree.
+# (Loops 1 and 2 are standalone modules; binaries match the module name.)
+loop-1-bare-crud/loop1
+loop-2-persist/loop2

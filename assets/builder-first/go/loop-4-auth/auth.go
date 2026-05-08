@@ -1,5 +1,10 @@
 // Loop 4 — auth. Sessions over JWT for simplicity and revocability.
 //
+// This file is a DELTA, not a standalone module. It declares `package main`
+// and is meant to be dropped alongside your evolved Loop-2 `main.go` (which
+// already contains `func main()`). Running `go build` here on its own will
+// fail with "function main is undeclared" — that's expected.
+//
 // Don't paste this into your main.go yet — read through, port piece by piece,
 // understand what each line is doing.
 
